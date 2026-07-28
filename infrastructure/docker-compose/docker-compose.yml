@@ -133,3 +133,23 @@ volumes:
   aurabank_auth_db_data:
   aurabank_accounts_db_data:
   aurabank_tx_db_data:
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: aurabank-prometheus
+    volumes:
+      - ../monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - aurabank-gateway-net
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: aurabank-grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - aurabank-gateway-net
+    restart: unless-stopped
