@@ -1,0 +1,40 @@
+name: AuraBank CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        service: [auth-service, accounts-service, transactions-service]
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: actions/docker-setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: actions/docker-login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and Push Docker Image
+      uses: actions/docker-build-push-action@v5
+      with:
+        context: ./backend/${{ matrix.service }}
+        file: ./backend/${{ matrix.service }}/Dockerfile
+        push: true
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/aurabank-${{ matrix.service }}:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/aurabank-${{ matrix.service }}:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
