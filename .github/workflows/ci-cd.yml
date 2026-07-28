@@ -19,16 +19,16 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Docker Buildx
-      uses: actions/docker-setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v3
 
     - name: Log in to Docker Hub
-      uses: actions/docker-login-action@v3
+      uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build and Push Docker Image
-      uses: actions/docker-build-push-action@v5
+      uses: docker/build-push-action@v5
       with:
         context: ./backend/${{ matrix.service }}
         file: ./backend/${{ matrix.service }}/Dockerfile
