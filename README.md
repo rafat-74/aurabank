@@ -207,7 +207,7 @@ docker compose up --build
 
 | اسم المستخدم | كلمة المرور | الدور (Role) | الفرع |
 |------------|------------|--------------|-------|
-| `m.elsayed` | `teller123` | Teller (صراف) | التجمع الخامس |
+| `Rafat Ashraf K` | `teller123` | Teller (صراف) | التجمع الخامس |
 | `s.ahmed` | `teller456` | Supervisor (مشرف) | المعادي |
 | `k.abdallah` | `admin789` | Admin (مدير نظام) | الإدارة العامة |
 

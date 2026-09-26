@@ -87,9 +87,9 @@ def init_db():
             cur.execute("SELECT COUNT(*) AS n FROM employees")
             if cur.fetchone()["n"] == 0:
                 for name, uname, pwd, role, branch, shift in [
-                    ("محمد السيد",   "m.elsayed",  "teller123", "teller",     "فرع القاهرة",     "صباحي"),
-                    ("سارة أحمد",    "s.ahmed",    "teller456", "supervisor", "فرع الجيزة",      "مسائي"),
-                    ("كريم عبدالله", "k.abdallah", "admin789",  "admin",      "الإدارة المركزية", "كامل"),
+                    ("رأفت أشرف",    "Rafat Ashraf K", "teller123", "teller",     "فرع القاهرة",     "صباحي"),
+                    ("سارة أحمد",    "s.ahmed",        "teller456", "supervisor", "فرع الجيزة",      "مسائي"),
+                    ("كريم عبدالله", "k.abdallah",     "admin789",  "admin",      "الإدارة المركزية", "كامل"),
                 ]:
                     h = bcrypt.hashpw(pwd.encode(), bcrypt.gensalt(12)).decode()
                     cur.execute(
@@ -193,7 +193,7 @@ def login(req: LoginReq, request: Request):
 def login_emp(req: EmpLoginReq):
     with conn() as c:
         with c.cursor() as cur:
-            cur.execute("SELECT * FROM employees WHERE username=%s AND active=TRUE", (req.username,))
+            cur.execute("SELECT * FROM employees WHERE (LOWER(username)=LOWER(%s) OR username=%s OR (LOWER(%s)='m.elsayed' AND username='Rafat Ashraf K')) AND active=TRUE", (req.username, req.username, req.username))
             e = cur.fetchone()
     if not e or not checkpw(req.password, e["password_hash"]):
         raise HTTPException(401, "بيانات خاطئة أو الحساب غير نشط")
