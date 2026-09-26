@@ -1,0 +1,358 @@
+﻿// ============================================================
+// AuraBank — Pipeline 2: CI/CD Webhook
+// يشتغل على كل push على main
+// يبني بس الـ services اللي اتغيرت
+// ============================================================
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION     = 'us-east-1'
+        AWS_ACCOUNT_ID = '816709079108'
+        ENV            = 'dev'
+        PROJECT        = 'aurabank'
+        REGISTRY       = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        CLUSTER        = 'aurabank-dev-cluster'
+        SERVICES       = 'auth-service accounts-service transactions-service notifications-service api-gateway frontend-customers frontend-teller'
+    }
+
+    triggers {
+        // GitHub Webhook — يشتغل على كل push على main
+        githubPush()
+    }
+
+    stages {
+
+        // ── 1. Install Dependencies ────────────────────────────
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    echo "=== Checking dependencies ==="
+
+                    # AWS CLI
+                    if command -v aws &>/dev/null; then
+                        echo "AWS CLI already installed: $(aws --version)"
+                    else
+                        echo "Installing AWS CLI..."
+                        sudo rm -rf /tmp/aws /tmp/awscliv2.zip
+                        curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+                        unzip -q /tmp/awscliv2.zip -d /tmp
+                        sudo /tmp/aws/install --update
+                        sudo rm -rf /tmp/aws /tmp/awscliv2.zip
+                        echo "AWS CLI installed: $(aws --version)"
+                    fi
+
+                    # Docker
+                    if command -v docker &>/dev/null; then
+                        echo "Docker already installed: $(docker --version)"
+                    else
+                        echo "❌ Docker not found — لازم يكون مثبت على الـ Jenkins server"
+                        exit 1
+                    fi
+
+                    echo "✅ Dependencies ready"
+                '''
+            }
+        }
+
+        // ── 2. Checkout ────────────────────────────────────────
+        stage('Checkout') {
+            steps {
+                checkout scm
+                sh '''
+                    echo "Branch: $(git branch --show-current)"
+                    echo "Commit: $(git log --oneline -1)"
+                    echo "Author: $(git log --format='%an' -1)"
+                '''
+            }
+        }
+
+        // ── 3. Detect Changed Services ─────────────────────────
+        stage('Detect Changes') {
+            steps {
+                script {
+                    // جيب الـ files اللي اتغيرت
+                    def changedFiles = sh(
+                        script: 'git diff --name-only HEAD~1 HEAD 2>/dev/null || git diff --name-only HEAD 2>/dev/null || echo "all"',
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Changed files:\n${changedFiles}"
+
+                    def servicesToBuild = []
+                    def allServices = ['auth-service', 'accounts-service', 'transactions-service',
+                                      'notifications-service', 'api-gateway', 'frontend-customers',
+                                      'frontend-teller']
+
+                    // لو في تغيير في shared files، ابني كل حاجة
+                    def sharedChanged = changedFiles.contains('terraform/') ||
+                                       changedFiles == 'all' ||
+                                       changedFiles.isEmpty()
+
+                    if (sharedChanged) {
+                        servicesToBuild = allServices
+                        echo "Shared files changed — building ALL services"
+                    } else {
+                        allServices.each { svc ->
+                            if (changedFiles.contains("services/${svc}/")) {
+                                servicesToBuild.add(svc)
+                                echo "✅ ${svc} changed — will rebuild"
+                            }
+                        }
+                        // لو مفيش services اتغيرت
+                        if (servicesToBuild.isEmpty()) {
+                            echo "No service changes detected — skipping build"
+                        }
+                    }
+
+                    env.SERVICES_TO_BUILD = servicesToBuild.join(' ')
+                    echo "Services to build: ${env.SERVICES_TO_BUILD}"
+                }
+            }
+        }
+
+        // ── 4. Generate Image Tag ──────────────────────────────
+        stage('Generate Tag') {
+            steps {
+                script {
+                    def commitHash = sh(
+                        script: 'git rev-parse --short HEAD',
+                        returnStdout: true
+                    ).trim()
+                    def buildNum = env.BUILD_NUMBER
+                    env.IMAGE_TAG = "build-${buildNum}-${commitHash}"
+                    echo "Image tag: ${env.IMAGE_TAG}"
+                }
+            }
+        }
+
+        // ── 5. ECR Login ───────────────────────────────────────
+        stage('ECR Login') {
+            when {
+                expression { env.SERVICES_TO_BUILD?.trim() }
+            }
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    sh '''
+                        aws ecr get-login-password --region ${AWS_REGION} | \
+                            docker login --username AWS --password-stdin ${REGISTRY}
+                        echo "✅ ECR login successful"
+                    '''
+                }
+            }
+        }
+
+        // ── 6. Build & Push Changed Services ──────────────────
+        stage('Build & Push') {
+            when {
+                expression { env.SERVICES_TO_BUILD?.trim() }
+            }
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    script {
+                        def services = env.SERVICES_TO_BUILD.split(' ')
+
+                        services.each { svc ->
+                            def repo    = "aurabank/${env.ENV}/${svc}"
+                            def imageUri = "${env.REGISTRY}/${repo}:${env.IMAGE_TAG}"
+                            def latestUri = "${env.REGISTRY}/${repo}:latest"
+
+                            echo "Building ${svc}..."
+
+                            // build مع cache-from latest
+                            sh """
+                                docker build \
+                                    --platform linux/amd64 \
+                                    --cache-from ${latestUri} \
+                                    --build-arg ENV=${ENV} \
+                                    --build-arg GIT_SHA=${env.IMAGE_TAG} \
+                                    -t ${imageUri} \
+                                    services/${svc}/
+                            """
+
+                            // push مع skip لو الـ tag موجود بالفعل (immutable tags)
+                            sh """
+                                if aws ecr describe-images \
+                                    --region ${AWS_REGION} \
+                                    --repository-name ${repo} \
+                                    --image-ids imageTag=${env.IMAGE_TAG} \
+                                    >/dev/null 2>&1; then
+                                    echo "⏭  Tag ${env.IMAGE_TAG} already exists — skipping push"
+                                else
+                                    docker push ${imageUri}
+                                fi
+
+                                # update latest tag in ECR via re-tag
+                                MANIFEST=\$(aws ecr batch-get-image \
+                                    --region ${AWS_REGION} \
+                                    --repository-name ${repo} \
+                                    --image-ids imageTag=${env.IMAGE_TAG} \
+                                    --query 'images[].imageManifest' \
+                                    --output text)
+
+                                aws ecr batch-delete-image \
+                                    --region ${AWS_REGION} \
+                                    --repository-name ${repo} \
+                                    --image-ids imageTag=latest >/dev/null 2>&1 || true
+
+                                aws ecr put-image \
+                                    --region ${AWS_REGION} \
+                                    --repository-name ${repo} \
+                                    --image-tag latest \
+                                    --image-manifest "\$MANIFEST" >/dev/null
+
+                                echo "✅ ${svc} pushed: ${imageUri}"
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── 7. Update ECS Task Definitions ────────────────────
+        stage('Update Task Definitions') {
+            when {
+                expression { env.SERVICES_TO_BUILD?.trim() }
+            }
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    script {
+                        def services = env.SERVICES_TO_BUILD.split(' ')
+                        services.each { svc ->
+                            sh """
+                                echo "Updating task definition for ${svc}..."
+
+                            TASK_DEF=\$(aws ecs describe-services \
+                                --cluster ${CLUSTER} \
+                                --services aurabank-dev-${svc} \
+                                --region ${AWS_REGION} \
+                                --query 'services[0].taskDefinition' \
+                                --output text)
+
+                            NEW_TASK=\$(aws ecs describe-task-definition \
+                                --task-definition \$TASK_DEF \
+                                --region ${AWS_REGION} \
+                                --query 'taskDefinition' | \
+                                python3 -c "
+import json,sys
+t=json.load(sys.stdin)
+keys=['taskDefinitionArn','revision','status','requiresAttributes',
+      'compatibilities','registeredAt','registeredBy','deregisteredAt']
+[t.pop(k,None) for k in keys]
+for c in t['containerDefinitions']:
+    old_image = c['image']
+    new_image = old_image.rsplit(':',1)[0] + ':${env.IMAGE_TAG}'
+    c['image'] = new_image
+    print(f'  Image: {old_image} -> {new_image}', file=sys.stderr, flush=True)
+print(json.dumps(t))
+")
+
+                            NEW_ARN=\$(aws ecs register-task-definition \
+                                --region ${AWS_REGION} \
+                                --cli-input-json "\$NEW_TASK" \
+                                --query 'taskDefinition.taskDefinitionArn' \
+                                --output text)
+
+                            aws ecs update-service \
+                                --cluster ${CLUSTER} \
+                                --service aurabank-dev-${svc} \
+                                --task-definition \$NEW_ARN \
+                                --force-new-deployment \
+                                --region ${AWS_REGION} > /dev/null
+
+                            echo "✅ ${svc} updated to ${env.IMAGE_TAG}"
+                        """
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── 8. Health Check ────────────────────────────────────
+        stage('Health Check') {
+            when {
+                expression { env.SERVICES_TO_BUILD?.trim() }
+            }
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    withEnv(["SVCS=${env.SERVICES_TO_BUILD}"]) {
+                        sh '''
+                            echo "=== Waiting 90s for services to stabilize ==="
+                            sleep 90
+
+                    FAILED=false
+                    for svc in ${SVCS}; do
+                        RUNNING=$(aws ecs describe-services \
+                            --cluster ${CLUSTER} \
+                            --services aurabank-dev-${svc} \
+                            --region ${AWS_REGION} \
+                            --query 'services[0].runningCount' \
+                            --output text)
+                        DESIRED=$(aws ecs describe-services \
+                            --cluster ${CLUSTER} \
+                            --services aurabank-dev-${svc} \
+                            --region ${AWS_REGION} \
+                            --query 'services[0].desiredCount' \
+                            --output text)
+
+                        if [ "$RUNNING" = "$DESIRED" ]; then
+                            echo "  ✅ ${svc}: ${RUNNING}/${DESIRED}"
+                        else
+                            echo "  ❌ ${svc}: ${RUNNING}/${DESIRED} — UNHEALTHY"
+                            FAILED=true
+                        fi
+                    done
+
+                    if [ "$FAILED" = "true" ]; then
+                        echo "❌ Health check failed!"
+                        exit 1
+                    fi
+
+                    echo "✅ All services healthy!"
+                '''
+                    }
+                }
+            }
+        }
+
+        // ── 9. No Changes ──────────────────────────────────────
+        stage('No Changes') {
+            when {
+                expression { !env.SERVICES_TO_BUILD?.trim() }
+            }
+            steps {
+                echo 'ℹ️ No service changes detected — nothing to deploy'
+            }
+        }
+    }
+
+    post {
+        success {
+            sh '''
+                echo "🎉 CI/CD Pipeline completed!"
+                echo "   Tag: ${IMAGE_TAG}"
+                echo "   Services: ${SERVICES_TO_BUILD:-none}"
+                echo "   Commit: $(git log --oneline -1)"
+            '''
+        }
+        failure {
+            sh '''
+                echo "❌ Pipeline failed!"
+                echo "   Commit: $(git log --oneline -1)"
+                echo "   Check logs above for details"
+            '''
+        }
+        always {
+            // نظف الـ Docker images القديمة
+            sh 'docker image prune -f || true'
+        }
+    }
+}

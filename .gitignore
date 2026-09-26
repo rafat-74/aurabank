@@ -1,0 +1,112 @@
+# ══════════════════════════════════════
+#  Aura Bank — .gitignore
+# ══════════════════════════════════════
+
+# ── Python ──────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ── Virtual Environments ─────────────
+venv/
+env/
+.venv/
+.env/
+ENV/
+
+# ── Environment Variables ────────────
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+
+# ── Docker ──────────────────────────
+# لا نتجاهل docker-compose.yml — ده جزء من المشروع
+# بس نتجاهل override files
+docker-compose.override.yml
+docker-compose.local.yml
+
+# ── PostgreSQL / Database ────────────
+*.sql.backup
+*.dump
+postgres_data/
+pgdata/
+
+# ── Docker Volumes (لو اتعملت locally) ─
+auth_data/
+accounts_data/
+transactions_data/
+notifications_data/
+
+# ── Logs ────────────────────────────
+*.log
+logs/
+*.log.*
+
+# ── OS Files ────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ── Windows Zone Identifier (الملفات اللي اترفعت من Windows) ──
+*Zone.Identifier
+
+# ── IDE / Editors ────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+
+# ── Node (لو في حاجة frontend build) ─
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Certificates / Secrets ───────────
+*.pem
+*.key
+*.crt
+*.cert
+ssl/
+
+# ── Test Coverage ────────────────────
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# ── Temporary Files ──────────────────
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+
+# ── Archive Files (مش محتاجينهم في الـ repo) ─
+*.zip
+*.rar
+*.tar.gz
+*.tar
+
+# ── Jupyter Notebooks ────────────────
+.ipynb_checkpoints/
+*.ipynb

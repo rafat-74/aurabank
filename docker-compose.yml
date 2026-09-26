@@ -1,0 +1,202 @@
+###############################################################################
+# AuraBank – Local Development docker-compose
+# Usage: docker-compose up --build
+# All services run locally; DB credentials via .env file
+###############################################################################
+
+version: "3.9"
+
+services:
+
+  # ── PostgreSQL (single instance, 4 schemas like RDS) ─────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: aurabank-postgres
+    environment:
+      POSTGRES_DB: aurabank
+      POSTGRES_USER: ${POSTGRES_USER:-aurabank_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-localdev_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - aurabank_postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aurabank_admin} -d aurabank"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - aurabank-net
+
+  # ── Auth Service :8001 ─────────────────────────────────────────────────────
+  auth-service:
+    build:
+      context: ./services/auth-service
+    container_name: aurabank-auth
+    environment:
+      DATABASE_URL: postgresql://auth_user:${AUTH_DB_PASSWORD:-auth_local_pass}@postgres:5432/aurabank?options=-csearch_path%3Dauth,public
+      JWT_SECRET: ${JWT_SECRET:-local-jwt-secret-dev-only-change-in-prod}
+      ACCOUNTS_URL: http://accounts-service:8002
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173,http://localhost:8080,http://localhost:8081}
+    ports:
+      - "8001:8001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - aurabank-net
+    restart: unless-stopped
+
+  # ── Accounts Service :8002 ─────────────────────────────────────────────────
+  accounts-service:
+    build:
+      context: ./services/accounts-service
+    container_name: aurabank-accounts
+    environment:
+      DATABASE_URL: postgresql://accounts_user:${ACCOUNTS_DB_PASSWORD:-accounts_local_pass}@postgres:5432/aurabank?options=-csearch_path%3Daccounts,public
+      NOTIFICATIONS_URL: http://notifications-service:8004
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173,http://localhost:8080,http://localhost:8081}
+    ports:
+      - "8002:8002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - aurabank-net
+    restart: unless-stopped
+
+  # ── Transactions Service :8003 ─────────────────────────────────────────────
+  transactions-service:
+    build:
+      context: ./services/transactions-service
+    container_name: aurabank-transactions
+    environment:
+      DATABASE_URL: postgresql://transactions_user:${TRANSACTIONS_DB_PASSWORD:-transactions_local_pass}@postgres:5432/aurabank?options=-csearch_path%3Dtransactions,public
+      ACCOUNTS_URL: http://accounts-service:8002
+      NOTIFICATIONS_URL: http://notifications-service:8004
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173,http://localhost:8080,http://localhost:8081}
+    ports:
+      - "8003:8003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - aurabank-net
+    restart: unless-stopped
+
+  # ── Notifications Service :8004 ────────────────────────────────────────────
+  notifications-service:
+    build:
+      context: ./services/notifications-service
+    container_name: aurabank-notifications
+    environment:
+      DATABASE_URL: postgresql://notifications_user:${NOTIFICATIONS_DB_PASSWORD:-notifications_local_pass}@postgres:5432/aurabank?options=-csearch_path%3Dnotifications,public
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173,http://localhost:8080,http://localhost:8081}
+    ports:
+      - "8004:8004"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8004/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - aurabank-net
+    restart: unless-stopped
+
+  # ── API Gateway :8000 ──────────────────────────────────────────────────────
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+    container_name: aurabank-gateway
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-local-jwt-secret-dev-only-change-in-prod}
+      AUTH_URL: http://auth-service:8001
+      ACCOUNTS_URL: http://accounts-service:8002
+      TRANSACTIONS_URL: http://transactions-service:8003
+      NOTIFICATIONS_URL: http://notifications-service:8004
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173,http://localhost:8080,http://localhost:8081}
+    ports:
+      - "8000:8000"
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      accounts-service:
+        condition: service_healthy
+      transactions-service:
+        condition: service_healthy
+      notifications-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aurabank-net
+    restart: unless-stopped
+
+  # ── Frontend Customers :8080 ───────────────────────────────────────────────
+  frontend-customers:
+    build:
+      context: ./services/frontend-customers
+    container_name: aurabank-frontend-customers
+    ports:
+      - "8080:80"
+    depends_on:
+      - api-gateway
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - aurabank-net
+    restart: unless-stopped
+
+  # ── Frontend Teller :8081 ──────────────────────────────────────────────────
+  frontend-teller:
+    build:
+      context: ./services/frontend-teller
+    container_name: aurabank-frontend-teller
+    ports:
+      - "8081:80"
+    depends_on:
+      - api-gateway
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - aurabank-net
+    restart: unless-stopped
+
+volumes:
+  aurabank_postgres_data:
+
+networks:
+  aurabank-net:
+    driver: bridge

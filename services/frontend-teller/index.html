@@ -1,0 +1,4386 @@
+﻿<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aura Bank — داشبورد الموظفين</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --bg2: #161b22;
+        --bg3: #1c2230;
+        --bg4: #21262d;
+        --border: rgba(48, 54, 61, 0.8);
+        --border2: rgba(99, 110, 123, 0.4);
+        --text: #e6edf3;
+        --text2: #8b949e;
+        --text3: #6e7681;
+        --blue: #388bfd;
+        --blue-bg: rgba(56, 139, 253, 0.1);
+        --green: #3fb950;
+        --green-bg: rgba(63, 185, 80, 0.1);
+        --red: #f85149;
+        --red-bg: rgba(248, 81, 73, 0.1);
+        --amber: #d29922;
+        --amber-bg: rgba(210, 153, 34, 0.1);
+        --purple: #bc8cff;
+        --purple-bg: rgba(188, 140, 255, 0.1);
+        --cyan: #39d2f0;
+        --cyan-bg: rgba(57, 210, 240, 0.08);
+        --r: 8px;
+        --r2: 12px;
+        --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "IBM Plex Sans Arabic", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        font-size: 14px;
+      }
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 3px;
+      }
+
+      #app {
+        display: flex;
+        min-height: 100vh;
+      }
+      #sidebar {
+        width: 240px;
+        flex-shrink: 0;
+        background: var(--bg2);
+        border-left: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 100;
+        transition: transform 0.3s;
+      }
+      #main {
+        flex: 1;
+        margin-right: 240px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .sb-header {
+        padding: 20px 16px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .sb-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .sb-logo-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #1a3a5c, #0d2137);
+        border: 1px solid rgba(56, 139, 253, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 900;
+        color: var(--blue);
+      }
+      .sb-logo-name {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .sb-logo-tag {
+        font-size: 0.65rem;
+        color: var(--text3);
+        margin-top: 1px;
+      }
+      .sb-emp {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: var(--r);
+        background: var(--bg3);
+        border: 1px solid var(--border);
+      }
+      .sb-emp-av {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+      }
+      .sb-emp-name {
+        font-size: 0.82rem;
+        font-weight: 600;
+      }
+      .sb-emp-role {
+        font-size: 0.68rem;
+        color: var(--text3);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .role-badge {
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 0.62rem;
+        font-weight: 600;
+      }
+      .sb-nav {
+        flex: 1;
+        padding: 10px 10px;
+        overflow-y: auto;
+      }
+      .sb-section {
+        font-size: 0.65rem;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        padding: 8px 8px 4px;
+        margin-top: 6px;
+      }
+      .sb-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: var(--r);
+        cursor: pointer;
+        color: var(--text2);
+        font-size: 0.85rem;
+        transition: all 0.2s;
+        margin-bottom: 2px;
+        border: 1px solid transparent;
+      }
+      .sb-item:hover {
+        background: var(--bg3);
+        color: var(--text);
+      }
+      .sb-item.active {
+        background: var(--blue-bg);
+        color: var(--blue);
+        border-color: rgba(56, 139, 253, 0.2);
+      }
+      .sb-item .ic {
+        font-size: 1rem;
+        width: 18px;
+        text-align: center;
+      }
+      .sb-item .lbl {
+        flex: 1;
+      }
+      .sb-footer {
+        padding: 12px;
+        border-top: 1px solid var(--border);
+      }
+      .sb-logout {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: var(--r);
+        cursor: pointer;
+        color: var(--red);
+        font-size: 0.85rem;
+        transition: background 0.2s;
+      }
+      .sb-logout:hover {
+        background: var(--red-bg);
+      }
+
+      #topbar {
+        height: 54px;
+        background: var(--bg2);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        gap: 12px;
+        position: sticky;
+        top: 0;
+        z-index: 90;
+      }
+      .tb-page-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        flex: 1;
+      }
+      .tb-time {
+        font-size: 0.8rem;
+        color: var(--text3);
+      }
+      .tb-branch {
+        font-size: 0.75rem;
+        color: var(--text2);
+        padding: 4px 10px;
+        background: var(--bg3);
+        border-radius: 6px;
+        border: 1px solid var(--border);
+      }
+      .tb-notif {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--r);
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: relative;
+        transition: background 0.2s;
+      }
+      .tb-notif:hover {
+        background: var(--bg4);
+      }
+      .tb-notif-dot {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--red);
+        border: 1.5px solid var(--bg2);
+      }
+
+      .content {
+        flex: 1;
+        padding: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+        animation: fadeUp 0.3s ease;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .stat-card {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: var(--r2);
+        padding: 16px;
+        position: relative;
+        overflow: hidden;
+        transition:
+          border-color 0.2s,
+          transform 0.2s;
+      }
+      .stat-card:hover {
+        border-color: var(--border2);
+        transform: translateY(-2px);
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        height: 2px;
+      }
+      .stat-card.blue::before {
+        background: var(--blue);
+      }
+      .stat-card.green::before {
+        background: var(--green);
+      }
+      .stat-card.amber::before {
+        background: var(--amber);
+      }
+      .stat-card.red::before {
+        background: var(--red);
+      }
+      .stat-card.purple::before {
+        background: var(--purple);
+      }
+      .stat-card.cyan::before {
+        background: var(--cyan);
+      }
+      .stat-label {
+        font-size: 0.72rem;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 8px;
+      }
+      .stat-val {
+        font-size: 1.6rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .stat-val.blue {
+        color: var(--blue);
+      }
+      .stat-val.green {
+        color: var(--green);
+      }
+      .stat-val.amber {
+        color: var(--amber);
+      }
+      .stat-val.red {
+        color: var(--red);
+      }
+      .stat-val.purple {
+        color: var(--purple);
+      }
+      .stat-val.cyan {
+        color: var(--cyan);
+      }
+      .stat-sub {
+        font-size: 0.72rem;
+        color: var(--text3);
+        margin-top: 6px;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .card {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: var(--r2);
+        overflow: hidden;
+      }
+      .card-head {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .card-title {
+        font-size: 0.88rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-body {
+        padding: 14px 16px;
+      }
+      .card-action {
+        font-size: 0.75rem;
+        color: var(--blue);
+        cursor: pointer;
+        padding: 4px 10px;
+        border-radius: 6px;
+        transition: background 0.2s;
+        border: 1px solid rgba(56, 139, 253, 0.3);
+      }
+      .card-action:hover {
+        background: var(--blue-bg);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th {
+        padding: 8px 12px;
+        text-align: right;
+        font-size: 0.68rem;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+      }
+      td {
+        padding: 10px 12px;
+        font-size: 0.82rem;
+        border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+        vertical-align: middle;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 50px;
+        font-size: 0.68rem;
+        font-weight: 600;
+      }
+      .badge.green {
+        background: var(--green-bg);
+        color: var(--green);
+        border: 1px solid rgba(63, 185, 80, 0.25);
+      }
+      .badge.red {
+        background: var(--red-bg);
+        color: var(--red);
+        border: 1px solid rgba(248, 81, 73, 0.25);
+      }
+      .badge.blue {
+        background: var(--blue-bg);
+        color: var(--blue);
+        border: 1px solid rgba(56, 139, 253, 0.25);
+      }
+      .badge.amber {
+        background: var(--amber-bg);
+        color: var(--amber);
+        border: 1px solid rgba(210, 153, 34, 0.25);
+      }
+      .badge.purple {
+        background: var(--purple-bg);
+        color: var(--purple);
+        border: 1px solid rgba(188, 140, 255, 0.25);
+      }
+      .badge.cyan {
+        background: var(--cyan-bg);
+        color: var(--cyan);
+        border: 1px solid rgba(57, 210, 240, 0.25);
+      }
+
+      .form-group {
+        margin-bottom: 14px;
+      }
+      .label {
+        font-size: 0.75rem;
+        color: var(--text2);
+        margin-bottom: 5px;
+        display: block;
+        font-weight: 500;
+      }
+      .input {
+        width: 100%;
+        padding: 9px 12px;
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 0.85rem;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        outline: none;
+      }
+      .input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.12);
+      }
+      .input::placeholder {
+        color: var(--text3);
+      }
+      select.input {
+        cursor: pointer;
+      }
+      option {
+        background: var(--bg3);
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .btn {
+        padding: 9px 18px;
+        border-radius: var(--r);
+        font-family: inherit;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn-primary {
+        background: var(--blue);
+        color: white;
+      }
+      .btn-primary:hover {
+        background: #4d9bfd;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(56, 139, 253, 0.3);
+      }
+      .btn-success {
+        background: var(--green);
+        color: var(--bg);
+      }
+      .btn-success:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+      }
+      .btn-danger {
+        background: var(--red);
+        color: white;
+      }
+      .btn-danger:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+      }
+      .btn-amber {
+        background: var(--amber);
+        color: var(--bg);
+      }
+      .btn-amber:hover {
+        filter: brightness(1.1);
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--text2);
+        border: 1px solid var(--border);
+      }
+      .btn-ghost:hover {
+        background: var(--bg3);
+        color: var(--text);
+      }
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+      .btn-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .customer-card {
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: var(--r2);
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.25s;
+      }
+      .customer-card:hover {
+        border-color: var(--blue);
+        background: var(--bg4);
+        transform: translateY(-1px);
+      }
+      .customer-card.selected {
+        border-color: var(--blue);
+        background: rgba(56, 139, 253, 0.06);
+      }
+      .cust-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .cust-av {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+      }
+      .cust-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .cust-num {
+        font-size: 0.72rem;
+        color: var(--text3);
+        font-family: monospace;
+        margin-top: 2px;
+      }
+      .cust-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .cust-stat {
+        background: var(--bg2);
+        border-radius: 6px;
+        padding: 8px 10px;
+      }
+      .cust-stat-label {
+        font-size: 0.62rem;
+        color: var(--text3);
+        margin-bottom: 2px;
+      }
+      .cust-stat-val {
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .tx-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+      }
+      .tx-item:last-child {
+        border-bottom: none;
+      }
+      .tx-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+      .tx-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .tx-desc {
+        font-size: 0.82rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .tx-meta {
+        font-size: 0.7rem;
+        color: var(--text3);
+        margin-top: 2px;
+      }
+      .tx-amount {
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-align: left;
+        white-space: nowrap;
+      }
+      .tx-amount.cr {
+        color: var(--green);
+      }
+      .tx-amount.dr {
+        color: var(--red);
+      }
+
+      .detail-panel {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: var(--r2);
+        padding: 20px;
+      }
+      .detail-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 12px;
+        border: 2px solid var(--border2);
+      }
+      .detail-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .detail-acc {
+        font-size: 0.75rem;
+        color: var(--text3);
+        font-family: monospace;
+        margin-top: 2px;
+      }
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(48, 54, 61, 0.4);
+        font-size: 0.82rem;
+      }
+      .info-row:last-child {
+        border-bottom: none;
+      }
+      .info-row .k {
+        color: var(--text3);
+      }
+      .info-row .v {
+        font-weight: 500;
+        text-align: left;
+      }
+
+      .op-box {
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: var(--r2);
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+      .op-box-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text2);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .amount-input-wrap {
+        position: relative;
+      }
+      .amount-input-wrap .currency {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.75rem;
+        color: var(--text3);
+        pointer-events: none;
+      }
+      .amount-input-wrap .input {
+        padding-right: 42px;
+        font-size: 1rem;
+        font-weight: 700;
+      }
+
+      .modal-bg {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(6px);
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .modal-bg.open {
+        display: flex;
+        animation: fadeIn 0.2s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .modal {
+        background: var(--bg2);
+        border: 1px solid var(--border2);
+        border-radius: 16px;
+        width: 100%;
+        max-width: 480px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        animation: scaleIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      @keyframes scaleIn {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .modal-head {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .modal-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+      .modal-close {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: var(--bg3);
+        border: none;
+        color: var(--text2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        font-size: 1rem;
+      }
+      .modal-close:hover {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .modal-body {
+        padding: 20px;
+      }
+      .modal-foot {
+        padding: 14px 20px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      #loginPage {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background:
+          radial-gradient(
+            ellipse at 30% 40%,
+            rgba(56, 139, 253, 0.08) 0%,
+            transparent 60%
+          ),
+          var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .login-box {
+        width: 100%;
+        max-width: 400px;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 36px 32px;
+        box-shadow: var(--shadow);
+        animation: fadeUp 0.5s ease;
+      }
+      .login-logo {
+        text-align: center;
+        margin-bottom: 28px;
+      }
+      .login-logo-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        margin: 0 auto 10px;
+        background: linear-gradient(135deg, #0d2137, #1a3a5c);
+        border: 1px solid rgba(56, 139, 253, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--blue);
+      }
+      .login-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+      }
+      .login-sub {
+        font-size: 0.82rem;
+        color: var(--text3);
+        margin-top: 4px;
+      }
+      .login-err {
+        background: var(--red-bg);
+        border: 1px solid rgba(248, 81, 73, 0.3);
+        border-radius: var(--r);
+        padding: 9px 12px;
+        font-size: 0.82rem;
+        color: var(--red);
+        margin-bottom: 14px;
+        display: none;
+      }
+      .login-submit {
+        width: 100%;
+        padding: 11px;
+        border-radius: var(--r);
+        border: none;
+        background: var(--blue);
+        color: white;
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 4px;
+      }
+      .login-submit:hover {
+        background: #4d9bfd;
+        box-shadow: 0 4px 20px rgba(56, 139, 253, 0.4);
+      }
+      .login-demo {
+        text-align: center;
+        margin-top: 14px;
+        font-size: 0.78rem;
+        color: var(--text3);
+      }
+      .login-demo span {
+        color: var(--blue);
+        cursor: pointer;
+      }
+      .login-demo span:hover {
+        text-decoration: underline;
+      }
+
+      .alert-bar {
+        position: fixed;
+        bottom: 20px;
+        right: 260px;
+        z-index: 9000;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .alert {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: var(--r);
+        background: var(--bg2);
+        border: 1px solid var(--border2);
+        box-shadow: var(--shadow);
+        font-size: 0.82rem;
+        min-width: 260px;
+        animation: slideLeft 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      @keyframes slideLeft {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      .alert.success {
+        border-color: rgba(63, 185, 80, 0.4);
+      }
+      .alert.error {
+        border-color: rgba(248, 81, 73, 0.4);
+      }
+      .alert.info {
+        border-color: rgba(56, 139, 253, 0.4);
+      }
+      .alert .a-icon {
+        font-size: 1rem;
+      }
+      .alert .a-msg {
+        flex: 1;
+      }
+
+      .receipt {
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: var(--r2);
+        padding: 16px;
+        font-size: 0.8rem;
+        line-height: 2;
+        font-family: monospace;
+      }
+      .receipt-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 8px;
+        color: var(--text2);
+      }
+      .receipt hr {
+        border: none;
+        border-top: 1px dashed var(--border2);
+        margin: 8px 0;
+      }
+      .receipt-total {
+        font-size: 1rem;
+        font-weight: 700;
+        text-align: center;
+        color: var(--green);
+        margin-top: 8px;
+      }
+
+      .spinner-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      .spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid var(--border2);
+        border-top-color: var(--blue);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .search-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .search-wrap {
+        position: relative;
+        flex: 1;
+      }
+      .search-wrap .s-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text3);
+        font-size: 0.9rem;
+        pointer-events: none;
+      }
+      .search-wrap .input {
+        padding-right: 32px;
+      }
+
+      .mini-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 3px;
+        height: 60px;
+      }
+      .mini-bar-group {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        align-items: center;
+      }
+      .mini-bar {
+        width: 100%;
+        border-radius: 2px 2px 0 0;
+        min-height: 2px;
+        transition: filter 0.2s;
+      }
+      .mini-bar:hover {
+        filter: brightness(1.3);
+      }
+
+      .frozen-banner {
+        background: var(--red-bg);
+        border: 1px solid rgba(248, 81, 73, 0.3);
+        border-radius: var(--r);
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        font-size: 0.8rem;
+        color: var(--red);
+        display: none;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .audit-item {
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(48, 54, 61, 0.4);
+        display: flex;
+        gap: 10px;
+        font-size: 0.78rem;
+      }
+      .audit-time {
+        color: var(--text3);
+        white-space: nowrap;
+        font-family: monospace;
+        min-width: 160px;
+      }
+      .audit-action {
+        flex: 1;
+      }
+      .audit-by {
+        color: var(--blue);
+        white-space: nowrap;
+      }
+
+      @media (max-width: 900px) {
+        #sidebar {
+          transform: translateX(100%);
+        }
+        #main {
+          margin-right: 0;
+        }
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="spinner-overlay" id="spinnerOverlay">
+      <div class="spinner"></div>
+    </div>
+
+    <div class="alert-bar" id="alertBar"></div>
+
+    <!-- ══ LOGIN ══ -->
+    <div id="loginPage">
+      <div class="login-box">
+        <div class="login-logo">
+          <div class="login-logo-icon">N</div>
+          <div class="login-title">Aura Bank</div>
+          <div class="login-sub">نظام موظفي الشبابيك — Teller System</div>
+        </div>
+        <div class="login-err" id="loginErr"></div>
+        <div class="form-group">
+          <label class="label">اسم المستخدم</label>
+          <input
+            class="input"
+            id="loginUser"
+            placeholder="m.elsayed"
+            autocomplete="username"
+            onkeydown="
+              if (event.key === 'Enter')
+                document.getElementById('loginPass').focus();
+            "
+          />
+        </div>
+        <div class="form-group">
+          <label class="label">كلمة المرور</label>
+          <input
+            class="input"
+            type="password"
+            id="loginPass"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            onkeydown="if (event.key === 'Enter') doLogin();"
+          />
+        </div>
+        <button class="login-submit" onclick="doLogin()">دخول النظام</button>
+        <div class="login-demo">
+          أو استخدم حساباً تجريبياً:
+          <span onclick="quickLogin('m.elsayed', 'teller123')">صرّاف</span> ·
+          <span onclick="quickLogin('k.abdallah', 'admin789')">مدير</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MAIN APP ══ -->
+    <div id="app" style="display: none">
+      <div id="sidebar">
+        <div class="sb-header">
+          <div class="sb-logo">
+            <div class="sb-logo-icon">N</div>
+            <div>
+              <div class="sb-logo-name">Aura Bank</div>
+              <div class="sb-logo-tag">Teller System v2.1</div>
+            </div>
+          </div>
+          <div class="sb-emp" id="sbEmp">
+            <div class="sb-emp-av" id="sbEmpAv"></div>
+            <div>
+              <div class="sb-emp-name" id="sbEmpName"></div>
+              <div class="sb-emp-role">
+                <span class="role-badge" id="sbRoleBadge"></span>
+                <span id="sbBranch"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sb-nav">
+          <div class="sb-section">الرئيسية</div>
+          <div
+            class="sb-item active"
+            onclick="showView('dashboard')"
+            id="nav-dashboard"
+          >
+            <span class="ic">📊</span><span class="lbl">لوحة التحكم</span>
+          </div>
+
+          <div class="sb-section">عمليات الشباك</div>
+          <div class="sb-item" onclick="showView('teller')" id="nav-teller">
+            <span class="ic">💰</span><span class="lbl">عمليات الشباك</span>
+          </div>
+          <div class="sb-item" onclick="showView('transfer')" id="nav-transfer">
+            <span class="ic">🔄</span><span class="lbl">التحويلات</span>
+          </div>
+
+          <div class="sb-section">العملاء</div>
+          <div
+            class="sb-item"
+            onclick="showView('customers')"
+            id="nav-customers"
+          >
+            <span class="ic">👥</span><span class="lbl">بحث العملاء</span>
+          </div>
+          <div
+            class="sb-item"
+            onclick="showView('newcustomer')"
+            id="nav-newcustomer"
+          >
+            <span class="ic">➕</span><span class="lbl">عميل جديد</span>
+          </div>
+
+          <div class="sb-section">التقارير</div>
+          <div class="sb-item" onclick="showView('reports')" id="nav-reports">
+            <span class="ic">📈</span><span class="lbl">تقارير اليوم</span>
+          </div>
+          <div class="sb-item" id="nav-audit" onclick="showView('audit')">
+            <span class="ic">🔍</span><span class="lbl">سجل العمليات</span>
+          </div>
+
+          <div class="sb-section">القروض</div>
+          <div class="sb-item" onclick="showView('loans')" id="nav-loans">
+            <span class="ic">🏦</span><span class="lbl">طلبات القروض</span>
+          </div>
+
+          <!-- Admin/Supervisor only -->
+          <div id="adminNav" style="display: none">
+            <div class="sb-section">الإدارة</div>
+            <div
+              class="sb-item"
+              onclick="showView('employees')"
+              id="nav-employees"
+            >
+              <span class="ic">👤</span><span class="lbl">الموظفون</span>
+            </div>
+            <div
+              class="sb-item"
+              onclick="showView('allaccounts')"
+              id="nav-allaccounts"
+            >
+              <span class="ic">🏦</span><span class="lbl">كل الحسابات</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sb-footer">
+          <div class="sb-logout" onclick="doLogout()">
+            <span>🚪</span> <span>تسجيل الخروج</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="main">
+        <div id="topbar">
+          <div class="tb-page-title" id="pageTitle">لوحة التحكم</div>
+          <div class="tb-time" id="tbTime"></div>
+          <div class="tb-branch" id="tbBranch"></div>
+          <div class="tb-notif" onclick="showView('audit')">
+            🔔
+            <div class="tb-notif-dot"></div>
+          </div>
+        </div>
+
+        <div class="content">
+          <!-- ══ DASHBOARD ══ -->
+          <div class="view active" id="view-dashboard">
+            <div class="stats-row" id="dashStats">
+              <div class="stat-card green">
+                <div class="stat-label">جاري التحميل...</div>
+                <div class="stat-val green">...</div>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-title">🔄 آخر العمليات اليوم</div>
+                  <div class="card-action" onclick="showView('reports')">
+                    عرض الكل
+                  </div>
+                </div>
+                <div class="card-body" id="dashRecentTx">
+                  <div
+                    style="
+                      color: var(--text3);
+                      text-align: center;
+                      padding: 20px;
+                    "
+                  >
+                    جاري التحميل...
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-title">👥 آخر العملاء</div>
+                </div>
+                <div class="card-body" id="dashRecentCust">
+                  <div
+                    style="
+                      color: var(--text3);
+                      text-align: center;
+                      padding: 20px;
+                    "
+                  >
+                    جاري التحميل...
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-title">📊 الإيداعات والسحوبات (7 أيام)</div>
+                </div>
+                <div class="card-body">
+                  <div class="mini-bars" id="weekChart"></div>
+                  <div
+                    id="weekLabels"
+                    style="
+                      display: flex;
+                      gap: 3px;
+                      margin-top: 6px;
+                      font-size: 0.65rem;
+                      color: var(--text3);
+                    "
+                  ></div>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 16px;
+                      margin-top: 6px;
+                      font-size: 0.72rem;
+                      color: var(--text3);
+                    "
+                  >
+                    <span style="display: flex; align-items: center; gap: 4px"
+                      ><span
+                        style="
+                          width: 10px;
+                          height: 10px;
+                          background: var(--green);
+                          border-radius: 2px;
+                          display: inline-block;
+                        "
+                      ></span
+                      >إيداع</span
+                    >
+                    <span style="display: flex; align-items: center; gap: 4px"
+                      ><span
+                        style="
+                          width: 10px;
+                          height: 10px;
+                          background: var(--red);
+                          border-radius: 2px;
+                          display: inline-block;
+                        "
+                      ></span
+                      >سحب</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-title">⚡ إجراءات سريعة</div>
+                </div>
+                <div class="card-body">
+                  <div
+                    style="
+                      display: grid;
+                      grid-template-columns: 1fr 1fr;
+                      gap: 10px;
+                    "
+                  >
+                    <button
+                      class="btn btn-success"
+                      onclick="showView('teller')"
+                    >
+                      💵 إيداع / سحب
+                    </button>
+                    <button
+                      class="btn btn-primary"
+                      onclick="showView('transfer')"
+                    >
+                      🔄 تحويل
+                    </button>
+                    <button
+                      class="btn btn-ghost"
+                      onclick="showView('customers')"
+                    >
+                      🔍 بحث عميل
+                    </button>
+                    <button
+                      class="btn btn-ghost"
+                      onclick="showView('newcustomer')"
+                    >
+                      ➕ عميل جديد
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ TELLER OPERATIONS ══ -->
+          <div class="view" id="view-teller">
+            <div class="search-bar">
+              <div class="search-wrap" style="flex: 1">
+                <span class="s-icon">🔍</span>
+                <input
+                  class="input"
+                  id="tellerSearch"
+                  placeholder="ابحث بالاسم أو رقم الحساب أو البريد الإلكتروني..."
+                  oninput="searchTellerCustomer()"
+                />
+              </div>
+            </div>
+            <div class="grid-2" id="tellerLayout">
+              <div>
+                <div
+                  style="
+                    font-size: 0.88rem;
+                    font-weight: 600;
+                    margin-bottom: 10px;
+                  "
+                >
+                  نتائج البحث
+                </div>
+                <div
+                  id="tellerCustList"
+                  style="display: flex; flex-direction: column; gap: 8px"
+                >
+                  <div
+                    style="
+                      color: var(--text3);
+                      font-size: 0.82rem;
+                      padding: 20px;
+                      text-align: center;
+                    "
+                  >
+                    ابحث عن عميل للبدء
+                  </div>
+                </div>
+              </div>
+              <div id="tellerOpsPanel" style="display: none">
+                <div class="detail-panel" style="margin-bottom: 12px">
+                  <div class="frozen-banner" id="frozenBanner">
+                    ❄️ هذا الحساب مجمّد — لا يمكن تنفيذ عمليات
+                  </div>
+                  <div class="detail-avatar" id="tellerCustAv"></div>
+                  <div class="detail-name" id="tellerCustName"></div>
+                  <div class="detail-acc" id="tellerCustNum"></div>
+                  <div style="margin-top: 12px">
+                    <div class="info-row">
+                      <span class="k">الرصيد الحالي</span
+                      ><span
+                        class="v"
+                        id="tellerBalance"
+                        style="
+                          color: var(--green);
+                          font-size: 1.1rem;
+                          font-weight: 800;
+                        "
+                      ></span>
+                    </div>
+                    <div class="info-row">
+                      <span class="k">البريد الإلكتروني</span
+                      ><span class="v" id="tellerEmail"></span>
+                    </div>
+                    <div class="info-row">
+                      <span class="k">الهاتف</span
+                      ><span class="v" id="tellerPhone"></span>
+                    </div>
+                    <div class="info-row">
+                      <span class="k">نوع الحساب</span
+                      ><span class="v" id="tellerAccType"></span>
+                    </div>
+                    <div class="info-row">
+                      <span class="k">حالة الحساب</span
+                      ><span class="v" id="tellerStatus"></span>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 8px;
+                      margin-top: 14px;
+                      flex-wrap: wrap;
+                    "
+                  >
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      onclick="openCustomerDetail()"
+                    >
+                      📋 التفاصيل الكاملة
+                    </button>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      id="freezeBtn"
+                      onclick="toggleFreeze()"
+                    >
+                      ❄️ تجميد
+                    </button>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      onclick="openEditCustomer()"
+                    >
+                      ✏️ تعديل
+                    </button>
+                  </div>
+                </div>
+
+                <div class="op-box">
+                  <div class="op-box-title">💵 إيداع نقدي</div>
+                  <div class="amount-input-wrap">
+                    <span class="currency">EGP</span>
+                    <input
+                      class="input"
+                      type="number"
+                      id="depositAmt"
+                      placeholder="0.00"
+                      min="1"
+                    />
+                  </div>
+                  <div
+                    class="form-group"
+                    style="margin-top: 10px; margin-bottom: 0"
+                  >
+                    <input
+                      class="input"
+                      id="depositNote"
+                      placeholder="ملاحظة (اختياري)"
+                    />
+                  </div>
+                  <div class="btn-row">
+                    <button class="btn btn-success" onclick="doDeposit()">
+                      ✅ تنفيذ الإيداع
+                    </button>
+                  </div>
+                </div>
+
+                <div class="op-box">
+                  <div class="op-box-title">💸 سحب نقدي</div>
+                  <div class="amount-input-wrap">
+                    <span class="currency">EGP</span>
+                    <input
+                      class="input"
+                      type="number"
+                      id="withdrawAmt"
+                      placeholder="0.00"
+                      min="1"
+                    />
+                  </div>
+                  <div
+                    class="form-group"
+                    style="margin-top: 10px; margin-bottom: 0"
+                  >
+                    <input
+                      class="input"
+                      id="withdrawNote"
+                      placeholder="ملاحظة (اختياري)"
+                    />
+                  </div>
+                  <div class="btn-row">
+                    <button class="btn btn-danger" onclick="doWithdraw()">
+                      ✅ تنفيذ السحب
+                    </button>
+                  </div>
+                </div>
+
+                <div class="op-box">
+                  <div class="op-box-title">🧾 دفع فاتورة</div>
+                  <div class="form-row">
+                    <div class="form-group" style="margin-bottom: 0">
+                      <label class="label">نوع الفاتورة</label>
+                      <select class="input" id="billType">
+                        <option>كهرباء</option>
+                        <option>مياه</option>
+                        <option>غاز</option>
+                        <option>إنترنت</option>
+                        <option>موبايل</option>
+                        <option>تأمين</option>
+                      </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0">
+                      <label class="label">رقم العداد</label>
+                      <input
+                        class="input"
+                        id="billNum"
+                        placeholder="XXXXXXXXXX"
+                      />
+                    </div>
+                  </div>
+                  <div class="amount-input-wrap" style="margin-top: 10px">
+                    <span class="currency">EGP</span>
+                    <input
+                      class="input"
+                      type="number"
+                      id="billAmt"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div class="btn-row">
+                    <button class="btn btn-amber" onclick="doPayBill()">
+                      ✅ دفع الفاتورة
+                    </button>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-title">📋 آخر معاملاته</div>
+                  </div>
+                  <div class="card-body" id="tellerCustTx"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ LOANS ══ -->
+          <div class="view" id="view-loans">
+            <div class="search-bar">
+              <div class="search-wrap" style="flex: 1">
+                <span class="s-icon">🔍</span>
+                <input
+                  class="input"
+                  id="loansSearch"
+                  placeholder="ابحث باسم العميل أو رقم الحساب..."
+                  oninput="renderLoansTable()"
+                />
+              </div>
+
+              <select
+                class="input"
+                id="loansStatusFilter"
+                style="max-width: 180px"
+                onchange="loadLoansView()"
+              >
+                <option value="">كل الحالات</option>
+                <option value="pending">قيد الدراسة</option>
+                <option value="approved">مقبول</option>
+                <option value="rejected">مرفوض</option>
+                <option value="cancelled">ملغي</option>
+              </select>
+
+              <button
+                class="btn btn-primary"
+                id="newLoanBtn"
+                style="display: none"
+                onclick="openNewLoanModal()"
+              >
+                ➕ طلب قرض جديد
+              </button>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title">🏦 طلبات القروض</div>
+              </div>
+
+              <div class="card-body">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>العميل</th>
+                      <th>رقم الحساب</th>
+                      <th>نوع القرض</th>
+                      <th>المبلغ</th>
+                      <th>القسط الشهري</th>
+                      <th>المدة</th>
+                      <th>مقدَّم من</th>
+                      <th>الحالة</th>
+                      <th>إجراءات</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="loansTableBody">
+                    <tr>
+                      <td
+                        colspan="9"
+                        style="
+                          text-align: center;
+                          padding: 20px;
+                          color: var(--text3);
+                        "
+                      >
+                        جاري التحميل...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ TRANSFER ══ -->
+          <div class="view" id="view-transfer">
+            <div class="grid-2">
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-title">🔄 تحويل بين الحسابات</div>
+                </div>
+                <div class="card-body">
+                  <div class="form-group">
+                    <label class="label">حساب المُرسِل</label>
+                    <input
+                      class="input"
+                      id="fromAcc"
+                      placeholder="ابحث باسم أو رقم الحساب..."
+                      oninput="searchFromAcc()"
+                    />
+                    <div id="fromAccResults" style="margin-top: 6px"></div>
+                  </div>
+                  <div
+                    id="fromAccSelected"
+                    style="display: none"
+                    class="op-box"
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                      "
+                    >
+                      <span
+                        id="fromAccName"
+                        style="font-weight: 600; font-size: 0.88rem"
+                      ></span>
+                      <span
+                        id="fromAccBalance"
+                        style="
+                          color: var(--green);
+                          font-weight: 700;
+                          font-size: 0.88rem;
+                        "
+                      ></span>
+                    </div>
+                    <div
+                      style="
+                        font-size: 0.72rem;
+                        color: var(--text3);
+                        font-family: monospace;
+                        margin-top: 2px;
+                      "
+                      id="fromAccNum"
+                    ></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="label">حساب المُستلِم</label>
+                    <input
+                      class="input"
+                      id="toAcc"
+                      placeholder="ابحث باسم أو رقم الحساب..."
+                      oninput="searchToAcc()"
+                    />
+                    <div id="toAccResults" style="margin-top: 6px"></div>
+                  </div>
+                  <div id="toAccSelected" style="display: none" class="op-box">
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                      "
+                    >
+                      <span
+                        id="toAccName"
+                        style="font-weight: 600; font-size: 0.88rem"
+                      ></span>
+                      <span
+                        style="color: var(--text3); font-size: 0.72rem"
+                        id="toAccNum2"
+                      ></span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="label">المبلغ (EGP)</label>
+                    <div class="amount-input-wrap">
+                      <span class="currency">EGP</span>
+                      <input
+                        class="input"
+                        type="number"
+                        id="transferAmt"
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="label">سبب التحويل</label>
+                    <input
+                      class="input"
+                      id="transferNote"
+                      placeholder="مثل: سداد قرض، تحويل راتب..."
+                    />
+                  </div>
+                  <button
+                    class="btn btn-primary"
+                    style="width: 100%"
+                    onclick="doTransfer()"
+                  >
+                    🔄 تنفيذ التحويل
+                  </button>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-title">📋 آخر التحويلات</div>
+                </div>
+                <div class="card-body" id="recentTransfers">
+                  <div
+                    style="
+                      color: var(--text3);
+                      text-align: center;
+                      padding: 20px;
+                    "
+                  >
+                    جاري التحميل...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ CUSTOMERS ══ -->
+          <div class="view" id="view-customers">
+            <div class="search-bar">
+              <div class="search-wrap" style="flex: 1">
+                <span class="s-icon">🔍</span>
+                <input
+                  class="input"
+                  id="custSearch"
+                  placeholder="ابحث بالاسم أو رقم الحساب أو البريد الإلكتروني أو رقم الهوية..."
+                  oninput="searchCustomers()"
+                />
+              </div>
+              <select
+                class="input"
+                style="width: 150px"
+                id="custFilter"
+                onchange="searchCustomers()"
+              >
+                <option value="">الكل</option>
+                <option value="active">نشط</option>
+                <option value="frozen">مجمّد</option>
+                <option value="premium">بريميوم</option>
+              </select>
+            </div>
+            <div
+              id="custResultsGrid"
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 12px;
+              "
+            ></div>
+          </div>
+
+          <!-- ══ NEW CUSTOMER ══ -->
+          <div class="view" id="view-newcustomer">
+            <div style="max-width: 700px">
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-title">➕ إضافة عميل جديد</div>
+                </div>
+                <div class="card-body">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="label">الاسم الأول *</label
+                      ><input class="input" id="nc-first" placeholder="محمد" />
+                    </div>
+                    <div class="form-group">
+                      <label class="label">الاسم الأخير *</label
+                      ><input class="input" id="nc-last" placeholder="أحمد" />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="label">البريد الإلكتروني *</label
+                      ><input
+                        class="input"
+                        id="nc-email"
+                        placeholder="example@email.com"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label class="label">رقم الهاتف *</label
+                      ><input
+                        class="input"
+                        id="nc-phone"
+                        placeholder="01XXXXXXXXX"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="label">رقم الهوية الوطنية *</label
+                      ><input
+                        class="input"
+                        id="nc-nid"
+                        placeholder="XXXXXXXXXXXXXX"
+                        maxlength="14"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label class="label">تاريخ الميلاد</label
+                      ><input class="input" type="date" id="nc-dob" />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="label">نوع الحساب</label>
+                      <select class="input" id="nc-type">
+                        <option value="standard">عادي</option>
+                        <option value="premium">بريميوم</option>
+                        <option value="business">أعمال</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="label">الرصيد الافتتاحي (EGP)</label
+                      ><input
+                        class="input"
+                        type="number"
+                        id="nc-balance"
+                        placeholder="0"
+                        min="0"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="label">كلمة المرور *</label
+                      ><input
+                        class="input"
+                        type="password"
+                        id="nc-pass"
+                        placeholder="••••••••"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label class="label">تأكيد كلمة المرور *</label
+                      ><input
+                        class="input"
+                        type="password"
+                        id="nc-pass2"
+                        placeholder="••••••••"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="label">العنوان</label
+                    ><input
+                      class="input"
+                      id="nc-address"
+                      placeholder="القاهرة، مصر"
+                    />
+                  </div>
+                  <button
+                    class="btn btn-primary"
+                    style="width: 100%; padding: 12px; font-size: 0.9rem"
+                    onclick="createCustomer()"
+                  >
+                    ✅ إنشاء الحساب
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ REPORTS ══ -->
+          <div class="view" id="view-reports">
+            <div class="stats-row" id="reportStats"></div>
+            <div class="card" style="margin-bottom: 16px">
+              <div class="card-head">
+                <div class="card-title">
+                  📊 تقرير عمليات اليوم — من قاعدة البيانات
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="window.print()">
+                  🖨️ طباعة
+                </button>
+              </div>
+              <div class="card-body">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>الوقت</th>
+                      <th>العميل</th>
+                      <th>نوع العملية</th>
+                      <th>المبلغ</th>
+                      <th>الموظف</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reportTableBody">
+                    <tr>
+                      <td
+                        colspan="5"
+                        style="
+                          text-align: center;
+                          padding: 20px;
+                          color: var(--text3);
+                        "
+                      >
+                        جاري التحميل...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ AUDIT LOG ══ -->
+          <div class="view" id="view-audit">
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title">
+                  🔍 سجل عمليات النظام — من قاعدة البيانات
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="clearAuditLog()">
+                  🗑️ مسح السجل
+                </button>
+              </div>
+              <div class="card-body" id="auditLogBody">
+                <div
+                  style="color: var(--text3); text-align: center; padding: 20px"
+                >
+                  جاري التحميل...
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ EMPLOYEES (Admin/Supervisor only) ══ -->
+          <div class="view" id="view-employees">
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title">👤 الموظفون</div>
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="openAddEmpModal()"
+                >
+                  ➕ موظف جديد
+                </button>
+              </div>
+              <div class="card-body">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>الاسم</th>
+                      <th>اسم المستخدم</th>
+                      <th>الدور</th>
+                      <th>الفرع</th>
+                      <th>الحالة</th>
+                      <th>إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="empTableBody">
+                    <tr>
+                      <td
+                        colspan="6"
+                        style="
+                          text-align: center;
+                          padding: 20px;
+                          color: var(--text3);
+                        "
+                      >
+                        جاري التحميل...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ ALL ACCOUNTS (Admin/Supervisor) ══ -->
+          <div class="view" id="view-allaccounts">
+            <div class="stats-row" id="allAccStats"></div>
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title">🏦 جميع الحسابات</div>
+              </div>
+              <div class="card-body">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>الاسم</th>
+                      <th>رقم الحساب</th>
+                      <th>نوع الحساب</th>
+                      <th>الرصيد</th>
+                      <th>الحالة</th>
+                      <th>إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="allAccBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /content -->
+      </div>
+      <!-- /main -->
+    </div>
+    <!-- /app -->
+
+    <!-- ══ MODALS ══ -->
+    <div class="modal-bg" id="custDetailModal">
+      <div class="modal" style="max-width: 600px">
+        <div class="modal-head">
+          <div class="modal-title" id="custDetailTitle">تفاصيل العميل</div>
+          <button class="modal-close" onclick="closeModal('custDetailModal')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-body" id="custDetailBody"></div>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="editCustModal">
+      <div class="modal">
+        <div class="modal-head">
+          <div class="modal-title">✏️ تعديل بيانات العميل</div>
+          <button class="modal-close" onclick="closeModal('editCustModal')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="label">الاسم الأول</label
+              ><input class="input" id="edit-first" />
+            </div>
+            <div class="form-group">
+              <label class="label">الاسم الأخير</label
+              ><input class="input" id="edit-last" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="label">البريد الإلكتروني</label
+              ><input class="input" id="edit-email" />
+            </div>
+            <div class="form-group">
+              <label class="label">الهاتف</label
+              ><input class="input" id="edit-phone" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="label">نوع الحساب</label>
+              <select class="input" id="edit-type">
+                <option value="standard">عادي</option>
+                <option value="premium">بريميوم</option>
+                <option value="business">أعمال</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="label">إعادة تعيين كلمة المرور</label
+              ><input
+                class="input"
+                type="password"
+                id="edit-pass"
+                placeholder="اتركه فارغاً للإبقاء"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('editCustModal')">
+            إلغاء
+          </button>
+          <button class="btn btn-primary" onclick="saveEditCustomer()">
+            💾 حفظ التعديلات
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="receiptModal">
+      <div class="modal" style="max-width: 400px">
+        <div class="modal-head">
+          <div class="modal-title">🧾 إيصال العملية</div>
+          <button class="modal-close" onclick="closeModal('receiptModal')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-body" id="receiptBody"></div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('receiptModal')">
+            إغلاق
+          </button>
+          <button class="btn btn-primary" onclick="window.print()">
+            🖨️ طباعة
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="addEmpModal">
+      <div class="modal">
+        <div class="modal-head">
+          <div class="modal-title">➕ موظف جديد</div>
+          <button class="modal-close" onclick="closeModal('addEmpModal')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="label">الاسم الكامل</label
+              ><input class="input" id="ne-name" />
+            </div>
+            <div class="form-group">
+              <label class="label">اسم المستخدم</label
+              ><input class="input" id="ne-user" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="label">كلمة المرور</label
+              ><input class="input" type="password" id="ne-pass" />
+            </div>
+            <div class="form-group">
+              <label class="label">الدور</label>
+              <select class="input" id="ne-role">
+                <option value="teller">صرّاف</option>
+                <option value="supervisor">مشرف</option>
+                <option value="admin">مدير</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="label">الفرع</label
+              ><input class="input" id="ne-branch" placeholder="فرع القاهرة" />
+            </div>
+            <div class="form-group">
+              <label class="label">الوردية</label>
+              <select class="input" id="ne-shift">
+                <option>صباحي</option>
+                <option>مسائي</option>
+                <option>كامل</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('addEmpModal')">
+            إلغاء
+          </button>
+          <button class="btn btn-primary" onclick="addEmployee()">
+            ➕ إضافة
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="confirmModal">
+      <div class="modal" style="max-width: 380px">
+        <div class="modal-head">
+          <div class="modal-title" id="confirmTitle">تأكيد</div>
+          <button class="modal-close" onclick="closeModal('confirmModal')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <p
+            id="confirmMsg"
+            style="font-size: 0.88rem; color: var(--text2); line-height: 1.6"
+          ></p>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('confirmModal')">
+            إلغاء
+          </button>
+          <button class="btn btn-danger" id="confirmOkBtn">تأكيد</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="newLoanModal">
+      <div class="modal" style="max-width: 480px">
+        <div class="modal-head">
+          <div class="modal-title">🏦 طلب قرض جديد نيابة عن عميل</div>
+          <button class="modal-close" onclick="closeModal('newLoanModal')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="label">العميل</label>
+            <input
+              class="input"
+              id="loanCustSearch"
+              placeholder="ابحث بالاسم أو رقم الحساب..."
+              oninput="searchLoanCustomer()"
+              autocomplete="off"
+            />
+            <div id="loanCustResults" style="margin-top: 6px"></div>
+            <div
+              id="loanCustSelected"
+              style="
+                display: none;
+                margin-top: 8px;
+                padding: 8px 10px;
+                background: var(--bg2);
+                border-radius: 8px;
+                font-size: 0.85rem;
+              "
+            ></div>
+          </div>
+
+          <div class="form-group">
+            <label class="label">نوع القرض</label>
+            <select class="input" id="loanTypeInput">
+              <option>قرض شخصي</option>
+              <option>قرض عقاري</option>
+              <option>قرض سيارة</option>
+              <option>قرض أعمال</option>
+              <option>قرض تعليمي</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom: 0">
+              <label class="label">المبلغ (EGP)</label>
+              <input
+                class="input"
+                type="number"
+                id="loanAmtInput"
+                placeholder="100000"
+                min="1"
+              />
+            </div>
+            <div class="form-group" style="margin-bottom: 0">
+              <label class="label">المدة (سنوات)</label>
+              <select class="input" id="loanYearsInput">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="5" selected>5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="label">الغرض من القرض</label>
+            <input class="input" id="loanPurposeInput" placeholder="اختياري" />
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('newLoanModal')">
+            إلغاء
+          </button>
+          <button class="btn btn-primary" onclick="submitTellerLoan()">
+            تقديم الطلب
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="rejectLoanModal">
+      <div class="modal" style="max-width: 420px">
+        <div class="modal-head">
+          <div class="modal-title">❌ رفض طلب القرض</div>
+          <button class="modal-close" onclick="closeModal('rejectLoanModal')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group" style="margin-bottom: 0">
+            <label class="label">سبب الرفض (اختياري)</label>
+            <input
+              class="input"
+              id="rejectReasonInput"
+              placeholder="مثل: الدخل غير كافٍ لسداد القسط..."
+            />
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('rejectLoanModal')">
+            إلغاء
+          </button>
+          <button class="btn btn-danger" onclick="confirmRejectLoan()">
+            تأكيد الرفض
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ════════════════════════════════════
+      //  CONFIG & API
+      // ════════════════════════════════════
+      const API_BASE = ""; // Relative path — nginx proxies /api/* to api-gateway
+
+      const EMP_TOKEN = {
+        get() {
+          return sessionStorage.getItem("aura_emp_token");
+        },
+        set(t) {
+          sessionStorage.setItem("aura_emp_token", t);
+        },
+        clear() {
+          sessionStorage.removeItem("aura_emp_token");
+          sessionStorage.removeItem("aura_teller_emp");
+        },
+      };
+
+      async function apiCall(method, path, body = null) {
+        const headers = { "Content-Type": "application/json" };
+        const token = EMP_TOKEN.get();
+        if (token) headers["Authorization"] = "Bearer " + token;
+        const opts = { method, headers };
+        if (body && method !== "GET") opts.body = JSON.stringify(body);
+        try {
+          const url =
+            body && method === "GET"
+              ? API_BASE + path + "?" + new URLSearchParams(body).toString()
+              : API_BASE + path;
+          const r = await fetch(url, opts);
+          const data = await r.json().catch(() => ({}));
+          if (r.status === 401) {
+            EMP_TOKEN.clear();
+            throw new Error("انتهت الجلسة — سجّل الدخول مرة أخرى");
+          }
+          if (!r.ok) throw new Error(data.detail || `خطأ ${r.status}`);
+          return data;
+        } catch (e) {
+          if (
+            e.message.includes("fetch") ||
+            e.message.includes("Failed") ||
+            e.message.includes("NetworkError")
+          ) {
+            throw new Error("تعذّر الاتصال بالخادم");
+          }
+          throw e;
+        }
+      }
+
+      // ════════════════════════════════════
+      //  STATE — NO in-memory data storage
+      //  Everything comes from PostgreSQL
+      // ════════════════════════════════════
+      let currentEmp = null;
+      let DB_users = []; // cached from API, refreshed on demand
+      let selectedCustomer = null;
+      let transferFrom = null;
+      let transferTo_acc = null;
+
+      // ════════════════════════════════════
+      //  AUTH
+      // ════════════════════════════════════
+      async function doLogin() {
+        const u = document.getElementById("loginUser").value.trim();
+        const p = document.getElementById("loginPass").value;
+        showSpinner();
+        try {
+          const r = await fetch(API_BASE + "/api/auth/login-employee", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: u, password: p }),
+          });
+          const data = await r.json();
+          hideSpinner();
+          if (r.ok && data.ok && data.employee) {
+            EMP_TOKEN.set(data.token);
+            await loginSuccess(data.employee);
+          } else {
+            showErr("loginErr", "❌ " + (data.detail || "بيانات خاطئة"));
+          }
+        } catch (e) {
+          hideSpinner();
+          showErr("loginErr", "❌ خطأ في الاتصال بالخادم");
+        }
+      }
+
+      function quickLogin(u, p) {
+        document.getElementById("loginUser").value = u;
+        document.getElementById("loginPass").value = p;
+        doLogin();
+      }
+
+      async function loginSuccess(emp) {
+        currentEmp = emp;
+        sessionStorage.setItem("aura_teller_emp", JSON.stringify(emp));
+
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("app").style.display = "flex";
+
+        // Sidebar info
+        document.getElementById("sbEmpName").textContent = emp.name;
+        document.getElementById("sbBranch").textContent = emp.branch;
+        document.getElementById("tbBranch").textContent = emp.branch;
+
+        const roleMap = {
+          teller: "صرّاف",
+          supervisor: "مشرف",
+          admin: "مدير نظام",
+        };
+        const roleColors = {
+          teller: "#3FB950",
+          supervisor: "#388BFD",
+          admin: "#BC8CFF",
+        };
+        const badge = document.getElementById("sbRoleBadge");
+        badge.textContent = roleMap[emp.role] || emp.role;
+        badge.style.background = (roleColors[emp.role] || "#888") + "22";
+        badge.style.color = roleColors[emp.role] || "#888";
+        badge.style.border = `1px solid ${roleColors[emp.role] || "#888"}44`;
+
+        const colors = ["#388BFD", "#3FB950", "#BC8CFF", "#D29922", "#39D2F0"];
+        const av = document.getElementById("sbEmpAv");
+        av.textContent = emp.name[0];
+        av.style.background =
+          colors[Math.abs((emp.id || "x").charCodeAt(4) || 0) % colors.length];
+
+        // Show admin/supervisor nav
+        if (emp.role === "admin" || emp.role === "supervisor") {
+          document.getElementById("adminNav").style.display = "block";
+        } else {
+          document.getElementById("adminNav").style.display = "none";
+        }
+
+        // Audit log tab: admin only
+        document.getElementById("nav-audit").style.display =
+          emp.role === "admin" ? "flex" : "none";
+
+        await addAudit(
+          `دخول النظام: ${emp.name} (${emp.username || ""}) — ${emp.branch}`,
+        );
+        startClock();
+
+        // Load initial data from DB
+        await loadUsersFromDB();
+        await loadDashboard();
+
+        // Auto-refresh every 30s
+        setInterval(async () => {
+          await loadUsersFromDB();
+          if (
+            document
+              .getElementById("view-dashboard")
+              .classList.contains("active")
+          ) {
+            await loadDashboard();
+          }
+        }, 30000);
+      }
+
+      function doLogout() {
+        confirm2(
+          "تأكيد الخروج",
+          "هل تريد تسجيل الخروج من النظام؟",
+          async () => {
+            await addAudit(`خروج من النظام: ${currentEmp.name}`);
+            EMP_TOKEN.clear();
+            currentEmp = null;
+            DB_users = [];
+            document.getElementById("app").style.display = "none";
+            document.getElementById("loginPage").style.display = "flex";
+            document.getElementById("loginUser").value = "";
+            document.getElementById("loginPass").value = "";
+          },
+        );
+      }
+
+      // ════════════════════════════════════
+      //  DATA FROM DB
+      // ════════════════════════════════════
+      async function loadUsersFromDB() {
+        try {
+          const data = await apiCall("GET", "/api/teller/accounts");
+          DB_users = (data.accounts || []).map((acc) => ({
+            id: acc.user_id,
+            accountId: acc.id,
+            firstName: acc.first_name || "?",
+            lastName: acc.last_name || "",
+            email: acc.email || "",
+            phone: acc.phone || "",
+            nid: acc.national_id || "",
+            accountNumber: acc.account_number,
+            accountType: acc.account_type,
+            balance: parseFloat(acc.balance) || 0,
+            savings: parseFloat(acc.savings_balance) || 0,
+            frozen: acc.frozen || false,
+          }));
+          return DB_users;
+        } catch (e) {
+          console.warn("loadUsersFromDB:", e.message);
+          return DB_users;
+        }
+      }
+
+
+      // ════════════════════════════════════
+      //  LOANS
+      // ════════════════════════════════════
+      let DB_loans = [];
+
+      const loanStatusLabel = {
+        pending:   { text: "قيد الدراسة", cls: "amber" },
+        approved:  { text: "مقبول",       cls: "green" },
+        rejected:  { text: "مرفوض",       cls: "red"   },
+        cancelled: { text: "ملغي",        cls: "cyan"  },
+      };
+
+      async function loadLoansView() {
+        // إظهار زرار "طلب قرض جديد" للتيلر فقط
+        document.getElementById("newLoanBtn").style.display =
+          currentEmp?.role === "teller" ? "inline-flex" : "none";
+
+        if (!DB_users.length) await loadUsersFromDB();
+
+        const statusFilter = document.getElementById("loansStatusFilter").value;
+        try {
+          const path = statusFilter
+            ? `/api/teller/loans?status=${statusFilter}`
+            : `/api/teller/loans`;
+          const data = await apiCall("GET", path);
+          DB_loans = data.loans || [];
+        } catch (e) {
+          console.warn("loadLoansView:", e.message);
+          DB_loans = [];
+        }
+        renderLoansTable();
+      }
+
+      function renderLoansTable() {
+        const q = (document.getElementById("loansSearch").value || "").toLowerCase().trim();
+        const tbody = document.getElementById("loansTableBody");
+
+        let rows = DB_loans;
+        if (q) {
+          rows = rows.filter(
+            (l) =>
+              `${l.first_name} ${l.last_name}`.toLowerCase().includes(q) ||
+              (l.account_number || "").toLowerCase().includes(q),
+          );
+        }
+
+        if (!rows.length) {
+          tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text3);">لا توجد طلبات قروض</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = rows
+          .map((l) => {
+            const st = loanStatusLabel[l.status] || { text: l.status, cls: "blue" };
+            const reqBy =
+              l.requested_by_role === "teller" ? "موظف" : "العميل نفسه";
+            return `
+        <tr>
+          <td>${l.first_name} ${l.last_name}</td>
+          <td style="font-family:monospace;font-size:0.78rem;">${l.account_number}</td>
+          <td>${l.loan_type}</td>
+          <td>${fmt(l.total)} EGP</td>
+          <td>${fmt(l.monthly)} EGP</td>
+          <td>${l.years} سنوات</td>
+          <td>${reqBy}</td>
+          <td><span class="badge ${st.cls}">${st.text}</span></td>
+          <td>${loanRowActions(l)}</td>
+        </tr>
+      `;
+          })
+          .join("");
+      }
+
+      function loanRowActions(l) {
+        if (l.status !== "pending") return `<span style="color:var(--text3);font-size:0.78rem;">—</span>`;
+
+        const role = currentEmp?.role;
+        let actions = "";
+
+        if (role === "teller") {
+          actions += `<button class="btn btn-ghost btn-sm" onclick="cancelLoan('${l.id}')">🚫 إلغاء</button>`;
+        }
+        if (role === "admin" || role === "supervisor") {
+          actions += `<button class="btn btn-success btn-sm" onclick="approveLoan('${l.id}')">✅ موافقة</button>
+                      <button class="btn btn-danger btn-sm" onclick="openRejectModal('${l.id}')">❌ رفض</button>`;
+        }
+        return actions || `<span style="color:var(--text3);font-size:0.78rem;">—</span>`;
+      }
+
+
+
+      let selectedLoanCustomer = null;
+
+      function openNewLoanModal() {
+        selectedLoanCustomer = null;
+        document.getElementById("loanCustSearch").value = "";
+        document.getElementById("loanCustResults").innerHTML = "";
+        document.getElementById("loanCustSelected").style.display = "none";
+        document.getElementById("loanCustSearch").style.display = "block";
+        document.getElementById("loanAmtInput").value = "";
+        document.getElementById("loanPurposeInput").value = "";
+        document.getElementById("loanYearsInput").value = "5";
+        openModal("newLoanModal");
+      }
+
+      function searchLoanCustomer() {
+        const q = document.getElementById("loanCustSearch").value.toLowerCase().trim();
+        showAccSuggestions(q, "loanCustResults", (user) => {
+          selectedLoanCustomer = user;
+          document.getElementById("loanCustSearch").style.display = "none";
+          document.getElementById("loanCustResults").innerHTML = "";
+          const sel = document.getElementById("loanCustSelected");
+          sel.style.display = "block";
+          sel.innerHTML = `✅ العميل: <strong>${user.firstName} ${user.lastName}</strong> — ${user.accountNumber}
+            <span style="color:var(--blue);cursor:pointer;margin-right:8px;" onclick="clearLoanCustomer()">تغيير</span>`;
+        });
+      }
+
+      function clearLoanCustomer() {
+        selectedLoanCustomer = null;
+        document.getElementById("loanCustSelected").style.display = "none";
+        document.getElementById("loanCustSearch").style.display = "block";
+        document.getElementById("loanCustSearch").value = "";
+      }
+
+      async function submitTellerLoan() {
+        if (!selectedLoanCustomer) {
+          showAlert("اختر عميلًا أولاً", "error");
+          return;
+        }
+        const amt = parseFloat(document.getElementById("loanAmtInput").value);
+        const years = parseInt(document.getElementById("loanYearsInput").value);
+        const loanType = document.getElementById("loanTypeInput").value;
+        const purpose = document.getElementById("loanPurposeInput").value;
+
+        if (!amt || amt <= 0) {
+          showAlert("أدخل مبلغًا صحيحًا", "error");
+          return;
+        }
+
+        try {
+          await apiCall(
+            "POST",
+            `/api/teller/loans/${selectedLoanCustomer.accountId}`,
+            {
+              amount: amt,
+              years,
+              loanType,
+              purpose,
+              tellerId: currentEmp.id,
+            },
+          );
+          closeModal("newLoanModal");
+          showAlert("✅ تم تقديم طلب القرض بنجاح");
+          await loadLoansView();
+        } catch (e) {
+          showAlert(e.message || "فشل تقديم الطلب", "error");
+        }
+      }
+
+      async function approveLoan(loanId) {
+        if (!confirm("هل أنت متأكد من الموافقة على هذا الطلب؟ سيتم إضافة المبلغ لرصيد العميل فورًا.")) return;
+        try {
+          await apiCall("PUT", `/api/teller/loans/${loanId}/approve`, {
+            reviewerId: currentEmp.id,
+            reviewerRole: currentEmp.role,
+            reviewerName: currentEmp.name,
+          });
+          showAlert("✅ تمت الموافقة على القرض");
+          await loadLoansView();
+        } catch (e) {
+          showAlert(e.message || "فشلت الموافقة", "error");
+        }
+      }
+
+      let loanToReject = null;
+
+      function openRejectModal(loanId) {
+        loanToReject = loanId;
+        document.getElementById("rejectReasonInput").value = "";
+        openModal("rejectLoanModal");
+      }
+
+      async function confirmRejectLoan() {
+        if (!loanToReject) return;
+        const note = document.getElementById("rejectReasonInput").value;
+        try {
+          await apiCall("PUT", `/api/teller/loans/${loanToReject}/reject`, {
+            reviewerId: currentEmp.id,
+            reviewerRole: currentEmp.role,
+            note,
+          });
+          closeModal("rejectLoanModal");
+          showAlert("❌ تم رفض الطلب");
+          loanToReject = null;
+          await loadLoansView();
+        } catch (e) {
+          showAlert(e.message || "فشل الرفض", "error");
+        }
+      }
+
+      async function cancelLoan(loanId) {
+        if (!confirm("هل تريد إلغاء هذا الطلب؟")) return;
+        try {
+          await apiCall("PUT", `/api/teller/loans/${loanId}/cancel`, {
+            tellerId: currentEmp.id,
+            tellerName: currentEmp.name,
+          });
+          showAlert("🚫 تم إلغاء الطلب");
+          await loadLoansView();
+        } catch (e) {
+          showAlert(e.message || "فشل الإلغاء", "error");
+        }
+      }
+
+
+      // ════════════════════════════════════
+      //  NAVIGATION
+      // ════════════════════════════════════
+      const viewTitles = {
+        dashboard: "لوحة التحكم",
+        teller: "عمليات الشباك",
+        transfer: "التحويلات",
+        customers: "بحث العملاء",
+        newcustomer: "عميل جديد",
+        reports: "تقارير اليوم",
+        audit: "سجل العمليات",
+        employees: "الموظفون",
+        allaccounts: "جميع الحسابات",
+        loans: "طلبات القروض",
+      };
+
+      async function showView(v) {
+        document
+          .querySelectorAll(".view")
+          .forEach((el) => el.classList.remove("active"));
+        document
+          .querySelectorAll(".sb-item")
+          .forEach((el) => el.classList.remove("active"));
+        const vEl = document.getElementById("view-" + v);
+        if (vEl) vEl.classList.add("active");
+        const navEl = document.getElementById("nav-" + v);
+        if (navEl) navEl.classList.add("active");
+        document.getElementById("pageTitle").textContent = viewTitles[v] || v;
+
+        if (v === "dashboard") await loadDashboard();
+        if (v === "customers") await loadCustomersGrid();
+        if (v === "reports") await loadReports();
+        if (v === "audit") await loadAuditLog();
+        if (v === "employees") await loadEmployees();
+        if (v === "allaccounts") {
+          await loadUsersFromDB();
+          loadAllAccounts();
+        }
+        if (v === "transfer") await loadRecentTransfers();
+        if (v === "loans") await loadLoansView();
+      }
+
+      // ════════════════════════════════════
+      //  DASHBOARD — All from PostgreSQL
+      // ════════════════════════════════════
+      async function loadDashboard() {
+        try {
+          // 1. Load today's teller log from DB
+          const logData = await apiCall("GET", "/api/teller/teller-log-today");
+          const tellerLog = logData.log || [];
+
+          // 2. Load all users for stats
+          if (!DB_users.length) await loadUsersFromDB();
+          const users = DB_users;
+
+          const totalBalance = users.reduce((s, u) => s + u.balance, 0);
+          const todayDeposits = tellerLog
+            .filter((t) => t.type === "deposit")
+            .reduce((s, t) => s + t.amount, 0);
+          const todayWithdraws = tellerLog
+            .filter((t) => t.type === "withdrawal" || t.type === "withdraw")
+            .reduce((s, t) => s + t.amount, 0);
+
+          document.getElementById("dashStats").innerHTML = `
+      <div class="stat-card green">
+        <div class="stat-label">إيداعات اليوم</div>
+        <div class="stat-val green">${fmt(todayDeposits)}</div>
+        <div class="stat-sub">EGP · ${tellerLog.filter((t) => t.type === "deposit").length} عملية</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">سحوبات اليوم</div>
+        <div class="stat-val red">${fmt(todayWithdraws)}</div>
+        <div class="stat-sub">EGP · ${tellerLog.filter((t) => t.type === "withdrawal" || t.type === "withdraw").length} عملية</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">عمليات اليوم</div>
+        <div class="stat-val blue">${tellerLog.length}</div>
+        <div class="stat-sub">إجمالي المعاملات</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-label">أرصدة العملاء</div>
+        <div class="stat-val amber">${fmt(totalBalance)}</div>
+        <div class="stat-sub">EGP إجمالي</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">عدد العملاء</div>
+        <div class="stat-val purple">${users.length}</div>
+        <div class="stat-sub">حساب مفتوح</div>
+      </div>
+      <div class="stat-card cyan">
+        <div class="stat-label">حسابات مجمّدة</div>
+        <div class="stat-val cyan">${users.filter((u) => u.frozen).length}</div>
+        <div class="stat-sub">من إجمالي الحسابات</div>
+      </div>
+    `;
+
+          // Recent TX
+          document.getElementById("dashRecentTx").innerHTML = tellerLog.length
+            ? tellerLog
+                .slice(0, 5)
+                .map((t) => txItem(t))
+                .join("")
+            : '<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">لا توجد عمليات اليوم</div>';
+
+          // Recent customers
+          document.getElementById("dashRecentCust").innerHTML = users
+            .slice(-5)
+            .map(
+              (u) => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(48,54,61,0.5);cursor:pointer;"
+        onclick="openCustDetailModal('${u.id}')">
+        <div style="width:32px;height:32px;border-radius:50%;background:${getColor(u.id)};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0;">${u.firstName[0]}</div>
+        <div style="flex:1;">
+          <div style="font-size:0.82rem;font-weight:600;">${u.firstName} ${u.lastName}</div>
+          <div style="font-size:0.7rem;color:var(--text3);font-family:monospace;">${u.accountNumber}</div>
+        </div>
+        <div style="font-size:0.82rem;font-weight:700;color:var(--green);">${fmt(u.balance)} EGP</div>
+      </div>
+    `,
+            )
+            .join("");
+
+          // 3. Load weekly stats from DB
+          await loadWeeklyChart();
+        } catch (e) {
+          console.error("loadDashboard error:", e.message);
+          document.getElementById("dashStats").innerHTML =
+            `<div style="color:var(--red);padding:20px;">خطأ في تحميل البيانات: ${e.message}</div>`;
+        }
+      }
+
+      async function loadWeeklyChart() {
+        try {
+          const weekData = await apiCall("GET", "/api/teller/weekly-stats");
+          const weekly = weekData.weekly || [];
+
+          // Build 7-day structure
+          const dayNames = [
+            "الأحد",
+            "الإثنين",
+            "الثلاثاء",
+            "الأربعاء",
+            "الخميس",
+            "الجمعة",
+            "السبت",
+          ];
+          const today = new Date();
+          const days = [];
+          for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            const dateStr = d.toISOString().substring(0, 10);
+            const dayRows = weekly.filter((r) => r.day === dateStr);
+            const dep = dayRows.find((r) => r.operation === "deposit");
+            const wit = dayRows.find((r) => r.operation === "withdrawal");
+            days.push({
+              label: dayNames[d.getDay()],
+              deposit: dep ? parseFloat(dep.total) : 0,
+              withdraw: wit ? parseFloat(wit.total) : 0,
+            });
+          }
+
+          const maxVal = Math.max(
+            1,
+            ...days.map((d) => Math.max(d.deposit, d.withdraw)),
+          );
+          const chartDiv = document.getElementById("weekChart");
+          const labelsDiv = document.getElementById("weekLabels");
+
+          chartDiv.innerHTML = days
+            .map(
+              (d) => `
+      <div class="mini-bar-group" title="${d.label}&#10;إيداع: ${fmt(d.deposit)}&#10;سحب: ${fmt(d.withdraw)}">
+        <div class="mini-bar" style="height:${Math.max(2, (d.deposit / maxVal) * 55)}px;background:var(--green);opacity:0.8;"></div>
+        <div class="mini-bar" style="height:${Math.max(2, (d.withdraw / maxVal) * 55)}px;background:var(--red);opacity:0.8;"></div>
+      </div>
+    `,
+            )
+            .join("");
+
+          labelsDiv.innerHTML = days
+            .map(
+              (d) =>
+                `<span style="flex:1;text-align:center;">${d.label.substring(0, 3)}</span>`,
+            )
+            .join("");
+        } catch (e) {
+          document.getElementById("weekChart").innerHTML =
+            `<div style="color:var(--text3);font-size:0.75rem;">تعذّر تحميل الرسم البياني</div>`;
+        }
+      }
+
+      function txItem(t) {
+        const op = t.type || "";
+        const icons = {
+          deposit: "💵",
+          credit: "💵",
+          withdrawal: "💸",
+          withdraw: "💸",
+          debit: "💸",
+          transfer: "🔄",
+          bill: "🧾",
+        };
+        const bgColors = {
+          deposit: "var(--green-bg)",
+          credit: "var(--green-bg)",
+          withdrawal: "var(--red-bg)",
+          withdraw: "var(--red-bg)",
+          transfer: "var(--blue-bg)",
+          bill: "var(--amber-bg)",
+        };
+        const isCr =
+          op === "deposit" || op === "credit" || op === "transfer_in";
+        const customerName = t.customer || t.customer_name || "";
+        const empName = t.emp || t.teller_name || "";
+        const timeStr = (t.time || t.created_at || "").substring(0, 16);
+        return `
+    <div class="tx-item">
+      <div class="tx-icon" style="background:${bgColors[op] || "var(--bg3)"};">${icons[op] || "💼"}</div>
+      <div class="tx-info">
+        <div class="tx-desc">${t.desc || t.description || ""}</div>
+        <div class="tx-meta">${customerName} · ${timeStr} · ${empName}</div>
+      </div>
+      <div class="tx-amount ${isCr ? "cr" : "dr"}">${isCr ? "+" : "-"}${fmt(t.amount)} EGP</div>
+    </div>
+  `;
+      }
+
+      // ════════════════════════════════════
+      //  TELLER SEARCH
+      // ════════════════════════════════════
+      function searchTellerCustomer() {
+        const q = document
+          .getElementById("tellerSearch")
+          .value.toLowerCase()
+          .trim();
+        if (!q) {
+          document.getElementById("tellerCustList").innerHTML =
+            '<div style="color:var(--text3);font-size:0.82rem;padding:20px;text-align:center;">ابحث عن عميل للبدء</div>';
+          return;
+        }
+        const results = DB_users.filter(
+          (u) =>
+            (u.firstName + " " + u.lastName).toLowerCase().includes(q) ||
+            u.accountNumber.toLowerCase().includes(q) ||
+            u.email.toLowerCase().includes(q) ||
+            (u.phone || "").includes(q) ||
+            (u.nid || "").includes(q),
+        );
+        renderTellerCustList(results);
+      }
+
+      function renderTellerCustList(results) {
+        const list = document.getElementById("tellerCustList");
+        if (!results.length) {
+          list.innerHTML =
+            '<div style="color:var(--text3);font-size:0.82rem;padding:20px;text-align:center;">لا توجد نتائج</div>';
+          return;
+        }
+        list.innerHTML = results
+          .map(
+            (u) => `
+    <div class="customer-card ${selectedCustomer?.id === u.id ? "selected" : ""}"
+      onclick="selectTellerCustomer('${u.id}')">
+      <div class="cust-top">
+        <div class="cust-av" style="background:${getColor(u.id)};">${u.firstName[0]}</div>
+        <div>
+          <div class="cust-name">${u.firstName} ${u.lastName}
+            ${u.frozen ? '<span style="color:var(--red);font-size:0.7rem;">❄️ مجمّد</span>' : ""}
+          </div>
+          <div class="cust-num">${u.accountNumber}</div>
+        </div>
+        <span class="badge ${u.frozen ? "red" : u.accountType === "premium" ? "amber" : "green"}" style="margin-right:auto;">
+          ${u.frozen ? "مجمّد" : u.accountType === "premium" ? "بريميوم" : "نشط"}
+        </span>
+      </div>
+      <div class="cust-stats">
+        <div class="cust-stat"><div class="cust-stat-label">الرصيد</div><div class="cust-stat-val" style="color:var(--green);">${fmt(u.balance)}</div></div>
+        <div class="cust-stat"><div class="cust-stat-label">الهاتف</div><div class="cust-stat-val" style="font-size:0.75rem;">${u.phone}</div></div>
+      </div>
+    </div>
+  `,
+          )
+          .join("");
+      }
+
+      async function selectTellerCustomer(id) {
+        // Refresh balance from DB before showing
+        await loadUsersFromDB();
+        selectedCustomer = DB_users.find((u) => u.id === id);
+        if (!selectedCustomer) return;
+
+        // Load recent transactions from DB
+        let txs = [];
+        try {
+          const txData = await apiCall(
+            "GET",
+            `/api/teller/transactions/${selectedCustomer.accountId}`,
+          );
+          if (txData && txData.transactions) {
+            txs = txData.transactions.map((t) => ({
+              ...t,
+              desc: t.description || t.desc || "",
+              amount: parseFloat(t.amount),
+              date: (t.created_at || t.date || "").substring(0, 10),
+              type: t.type,
+            }));
+          }
+        } catch (e) {
+          /* no transactions yet */
+        }
+
+        selectedCustomer.transactions = txs;
+
+        // Render panel
+        document.getElementById("tellerOpsPanel").style.display = "block";
+        document.getElementById("frozenBanner").style.display =
+          selectedCustomer.frozen ? "flex" : "none";
+        document.getElementById("freezeBtn").textContent =
+          selectedCustomer.frozen ? "🔓 إلغاء التجميد" : "❄️ تجميد الحساب";
+
+        document.getElementById("tellerCustAv").textContent =
+          selectedCustomer.firstName[0];
+        document.getElementById("tellerCustAv").style.background = getColor(
+          selectedCustomer.id,
+        );
+        document.getElementById("tellerCustName").textContent =
+          selectedCustomer.firstName + " " + selectedCustomer.lastName;
+        document.getElementById("tellerCustNum").textContent =
+          selectedCustomer.accountNumber;
+        document.getElementById("tellerBalance").textContent =
+          fmt(selectedCustomer.balance) + " EGP";
+        document.getElementById("tellerEmail").textContent =
+          selectedCustomer.email;
+        document.getElementById("tellerPhone").textContent =
+          selectedCustomer.phone;
+
+        const types = {
+          standard: "عادي",
+          premium: "بريميوم",
+          business: "أعمال",
+        };
+        document.getElementById("tellerAccType").textContent =
+          types[selectedCustomer.accountType] || "عادي";
+        document.getElementById("tellerStatus").innerHTML =
+          `<span class="badge ${selectedCustomer.frozen ? "red" : "green"}">${selectedCustomer.frozen ? "مجمّد" : "نشط"}</span>`;
+
+        document.getElementById("tellerCustTx").innerHTML = txs.length
+          ? txs
+              .slice(0, 6)
+              .map(
+                (t) => `
+        <div class="tx-item">
+          <div class="tx-icon" style="background:${t.type === "credit" ? "var(--green-bg)" : "var(--red-bg)"};">${t.type === "credit" ? "💵" : "💸"}</div>
+          <div class="tx-info">
+            <div class="tx-desc">${t.desc}</div>
+            <div class="tx-meta">${t.date}</div>
+          </div>
+          <div class="tx-amount ${t.type === "credit" ? "cr" : "dr"}">${t.type === "credit" ? "+" : "-"}${fmt(t.amount)} EGP</div>
+        </div>
+      `,
+              )
+              .join("")
+          : '<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:16px;">لا توجد معاملات سابقة</div>';
+
+        // Re-render search list to show selection
+        const q = document.getElementById("tellerSearch").value.toLowerCase();
+        if (q) {
+          const results = DB_users.filter(
+            (u) =>
+              (u.firstName + " " + u.lastName).toLowerCase().includes(q) ||
+              u.accountNumber.toLowerCase().includes(q),
+          );
+          renderTellerCustList(results);
+        }
+      }
+
+      // ════════════════════════════════════
+      //  TELLER OPERATIONS
+      // ════════════════════════════════════
+      async function doDeposit() {
+        if (!selectedCustomer) {
+          showAlert("اختر عميلاً أولاً", "error");
+          return;
+        }
+        if (selectedCustomer.frozen) {
+          showAlert("الحساب مجمّد — لا يمكن الإيداع", "error");
+          return;
+        }
+        const amt = parseFloat(document.getElementById("depositAmt").value);
+        const note =
+          document.getElementById("depositNote").value.trim() || "إيداع نقدي";
+        if (!amt || amt <= 0) {
+          showAlert("أدخل مبلغاً صحيحاً", "error");
+          return;
+        }
+
+        confirm2(
+          "تأكيد الإيداع",
+          `إيداع ${fmt(amt)} EGP في حساب ${selectedCustomer.firstName} ${selectedCustomer.lastName}؟`,
+          async () => {
+            showSpinner();
+            try {
+              const res = await apiCall("POST", "/api/teller/deposit", {
+                accountId: selectedCustomer.accountId,
+                amount: amt,
+                note: note,
+                tellerName: currentEmp.name,
+                tellerId: currentEmp.id,
+                customerName: `${selectedCustomer.firstName} ${selectedCustomer.lastName}`,
+              });
+              await addAudit(
+                `إيداع ${fmt(amt)} EGP في حساب ${selectedCustomer.accountNumber} (${selectedCustomer.firstName} ${selectedCustomer.lastName})`,
+              );
+              hideSpinner();
+              document.getElementById("depositAmt").value = "";
+              document.getElementById("depositNote").value = "";
+              showReceipt(
+                "إيداع نقدي",
+                selectedCustomer,
+                amt,
+                "credit",
+                note,
+                res.newBalance,
+              );
+              showAlert(`✅ تم إيداع ${fmt(amt)} EGP بنجاح`, "success");
+              // Refresh data from DB
+              await loadUsersFromDB();
+              await selectTellerCustomer(selectedCustomer.id);
+              if (
+                document
+                  .getElementById("view-dashboard")
+                  .classList.contains("active")
+              )
+                await loadDashboard();
+            } catch (e) {
+              hideSpinner();
+              showAlert("❌ " + e.message, "error");
+            }
+          },
+        );
+      }
+
+      async function doWithdraw() {
+        if (!selectedCustomer) {
+          showAlert("اختر عميلاً أولاً", "error");
+          return;
+        }
+        if (selectedCustomer.frozen) {
+          showAlert("الحساب مجمّد — لا يمكن السحب", "error");
+          return;
+        }
+        const amt = parseFloat(document.getElementById("withdrawAmt").value);
+        const note =
+          document.getElementById("withdrawNote").value.trim() || "سحب نقدي";
+        if (!amt || amt <= 0) {
+          showAlert("أدخل مبلغاً صحيحاً", "error");
+          return;
+        }
+        if (amt > selectedCustomer.balance) {
+          showAlert("الرصيد غير كافٍ", "error");
+          return;
+        }
+
+        confirm2(
+          "تأكيد السحب",
+          `سحب ${fmt(amt)} EGP من حساب ${selectedCustomer.firstName}؟`,
+          async () => {
+            showSpinner();
+            try {
+              const res = await apiCall("POST", "/api/teller/withdraw", {
+                accountId: selectedCustomer.accountId,
+                amount: amt,
+                note: note,
+                tellerName: currentEmp.name,
+                tellerId: currentEmp.id,
+                customerName: `${selectedCustomer.firstName} ${selectedCustomer.lastName}`,
+              });
+              await addAudit(
+                `سحب ${fmt(amt)} EGP من حساب ${selectedCustomer.accountNumber} (${selectedCustomer.firstName} ${selectedCustomer.lastName})`,
+              );
+              hideSpinner();
+              document.getElementById("withdrawAmt").value = "";
+              document.getElementById("withdrawNote").value = "";
+              showReceipt(
+                "سحب نقدي",
+                selectedCustomer,
+                amt,
+                "debit",
+                note,
+                res.newBalance,
+              );
+              showAlert(`✅ تم سحب ${fmt(amt)} EGP بنجاح`, "success");
+              await loadUsersFromDB();
+              await selectTellerCustomer(selectedCustomer.id);
+              if (
+                document
+                  .getElementById("view-dashboard")
+                  .classList.contains("active")
+              )
+                await loadDashboard();
+            } catch (e) {
+              hideSpinner();
+              showAlert("❌ " + e.message, "error");
+            }
+          },
+        );
+      }
+
+      async function doPayBill() {
+        if (!selectedCustomer) {
+          showAlert("اختر عميلاً أولاً", "error");
+          return;
+        }
+        if (selectedCustomer.frozen) {
+          showAlert("الحساب مجمّد", "error");
+          return;
+        }
+        const type = document.getElementById("billType").value;
+        const num = document.getElementById("billNum").value.trim();
+        const amt = parseFloat(document.getElementById("billAmt").value);
+        if (!num) {
+          showAlert("أدخل رقم العداد", "error");
+          return;
+        }
+        if (!amt || amt <= 0) {
+          showAlert("أدخل مبلغاً صحيحاً", "error");
+          return;
+        }
+        if (amt > selectedCustomer.balance) {
+          showAlert("الرصيد غير كافٍ", "error");
+          return;
+        }
+
+        showSpinner();
+        try {
+          const res = await apiCall("POST", "/api/teller/pay-bill", {
+            accountId: selectedCustomer.accountId,
+            billType: type,
+            billNumber: num,
+            amount: amt,
+            tellerName: currentEmp.name,
+            tellerId: currentEmp.id,
+            customerName: `${selectedCustomer.firstName} ${selectedCustomer.lastName}`,
+          });
+          await addAudit(`دفع فاتورة ${type} (${num}) بقيمة ${fmt(amt)} EGP`);
+          hideSpinner();
+          showReceipt(
+            `فاتورة ${type}`,
+            selectedCustomer,
+            amt,
+            "debit",
+            `رقم العداد: ${num}`,
+            res.newBalance,
+          );
+          showAlert(`✅ تم دفع فاتورة ${type} بنجاح`, "success");
+          await loadUsersFromDB();
+          await selectTellerCustomer(selectedCustomer.id);
+        } catch (e) {
+          hideSpinner();
+          showAlert("❌ " + e.message, "error");
+        }
+      }
+
+      function openCustomerDetail() {
+        if (selectedCustomer) openCustDetailModal(selectedCustomer.id);
+      }
+
+      async function toggleFreeze() {
+        if (!selectedCustomer) return;
+        const u = DB_users.find((u) => u.id === selectedCustomer.id);
+        if (!u) return;
+        const action = u.frozen ? "إلغاء تجميد" : "تجميد";
+        confirm2(
+          "تأكيد",
+          `${action} حساب ${u.firstName} ${u.lastName}؟`,
+          async () => {
+            showSpinner();
+            try {
+              const endpoint = u.frozen
+                ? `/api/teller/accounts/${u.accountId}/unfreeze`
+                : `/api/teller/accounts/${u.accountId}/freeze`;
+              await apiCall("POST", endpoint, {});
+              await addAudit(
+                `${action} حساب ${u.accountNumber} (${u.firstName} ${u.lastName})`,
+              );
+              hideSpinner();
+              await loadUsersFromDB();
+              await selectTellerCustomer(u.id);
+              showAlert(`✅ تم ${action} الحساب`, "info");
+            } catch (e) {
+              hideSpinner();
+              showAlert("❌ " + e.message, "error");
+            }
+          },
+        );
+      }
+
+      // ════════════════════════════════════
+      //  TRANSFER
+      // ════════════════════════════════════
+      function searchFromAcc() {
+        const q = document.getElementById("fromAcc").value.toLowerCase();
+        showAccSuggestions(q, "fromAccResults", (u) => {
+          transferFrom = u;
+          document.getElementById("fromAcc").value =
+            u.firstName + " " + u.lastName;
+          document.getElementById("fromAccResults").innerHTML = "";
+          document.getElementById("fromAccSelected").style.display = "block";
+          document.getElementById("fromAccName").textContent =
+            `${u.firstName} ${u.lastName}`;
+          document.getElementById("fromAccBalance").textContent =
+            fmt(u.balance) + " EGP";
+          document.getElementById("fromAccNum").textContent = u.accountNumber;
+        });
+      }
+
+      function searchToAcc() {
+        const q = document.getElementById("toAcc").value.toLowerCase();
+        showAccSuggestions(q, "toAccResults", (u) => {
+          transferTo_acc = u;
+          document.getElementById("toAcc").value =
+            u.firstName + " " + u.lastName;
+          document.getElementById("toAccResults").innerHTML = "";
+          document.getElementById("toAccSelected").style.display = "block";
+          document.getElementById("toAccName").textContent =
+            `${u.firstName} ${u.lastName}`;
+          document.getElementById("toAccNum2").textContent = u.accountNumber;
+        });
+      }
+
+      function showAccSuggestions(q, containerId, onSelect) {
+        if (!q || q.length < 2) {
+          document.getElementById(containerId).innerHTML = "";
+          return;
+        }
+        const results = DB_users.filter(
+          (u) =>
+            (u.firstName + " " + u.lastName).toLowerCase().includes(q) ||
+            u.accountNumber.toLowerCase().includes(q) ||
+            u.email.toLowerCase().includes(q),
+        ).slice(0, 5);
+        document.getElementById(containerId).innerHTML = results
+          .map(
+            (u) => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;border-radius:var(--r);background:var(--bg3);border:1px solid var(--border);margin-bottom:4px;transition:background 0.2s;"
+      onmouseover="this.style.background='var(--bg4)'"
+      onmouseout="this.style.background='var(--bg3)'"
+      data-uid="${u.id}">
+      <div style="width:28px;height:28px;border-radius:50%;background:${getColor(u.id)};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;">${u.firstName[0]}</div>
+      <div style="flex:1;">
+        <div style="font-size:0.82rem;font-weight:600;">${u.firstName} ${u.lastName}</div>
+        <div style="font-size:0.7rem;color:var(--text3);font-family:monospace;">${u.accountNumber}</div>
+      </div>
+      <div style="font-size:0.8rem;font-weight:700;color:var(--green);">${fmt(u.balance)} EGP</div>
+    </div>
+  `,
+          )
+          .join("");
+        // Attach click handlers
+        document
+          .getElementById(containerId)
+          .querySelectorAll("[data-uid]")
+          .forEach((el) => {
+            el.addEventListener("click", () => {
+              const uid = el.dataset.uid;
+              const user = DB_users.find((u) => u.id === uid);
+              if (user) onSelect(user);
+            });
+          });
+      }
+
+      async function doTransfer() {
+        if (!transferFrom) {
+          showAlert("اختر حساب المُرسِل", "error");
+          return;
+        }
+        if (!transferTo_acc) {
+          showAlert("اختر حساب المُستلِم", "error");
+          return;
+        }
+        if (transferFrom.id === transferTo_acc.id) {
+          showAlert("لا يمكن التحويل لنفس الحساب", "error");
+          return;
+        }
+        const amt = parseFloat(document.getElementById("transferAmt").value);
+        const note =
+          document.getElementById("transferNote").value.trim() || "تحويل بنكي";
+        if (!amt || amt <= 0) {
+          showAlert("أدخل مبلغاً صحيحاً", "error");
+          return;
+        }
+
+        const fromUser = DB_users.find((u) => u.id === transferFrom.id);
+        if (!fromUser) {
+          showAlert("حساب المرسل غير موجود", "error");
+          return;
+        }
+        if (amt > fromUser.balance) {
+          showAlert("رصيد المُرسِل غير كافٍ", "error");
+          return;
+        }
+        if (fromUser.frozen) {
+          showAlert("حساب المُرسِل مجمّد", "error");
+          return;
+        }
+
+        confirm2(
+          "تأكيد التحويل",
+          `تحويل ${fmt(amt)} EGP\nمن: ${fromUser.firstName} ${fromUser.lastName}\nإلى: ${transferTo_acc.firstName} ${transferTo_acc.lastName}`,
+          async () => {
+            showSpinner();
+            try {
+              const res = await apiCall("POST", "/api/teller/transfer", {
+                fromAccountId: fromUser.accountId,
+                toAccountNumber: transferTo_acc.accountNumber,
+                amount: amt,
+                note: note,
+                performedBy: "teller",
+                performedById: currentEmp.id,
+                tellerName: currentEmp.name,
+                customerName: `${fromUser.firstName} → ${transferTo_acc.firstName}`,
+              });
+              await addAudit(
+                `تحويل ${fmt(amt)} EGP من ${fromUser.accountNumber} إلى ${transferTo_acc.accountNumber}: ${note}`,
+              );
+              hideSpinner();
+              // Reset form
+              document.getElementById("transferAmt").value = "";
+              document.getElementById("transferNote").value = "";
+              document.getElementById("fromAcc").value = "";
+              document.getElementById("toAcc").value = "";
+              document.getElementById("fromAccSelected").style.display = "none";
+              document.getElementById("toAccSelected").style.display = "none";
+              transferFrom = null;
+              transferTo_acc = null;
+              showAlert(`✅ تم تحويل ${fmt(amt)} EGP بنجاح`, "success");
+              await loadUsersFromDB();
+              await loadRecentTransfers();
+            } catch (e) {
+              hideSpinner();
+              showAlert("❌ " + e.message, "error");
+            }
+          },
+        );
+      }
+
+      async function loadRecentTransfers() {
+        try {
+          const data = await apiCall("GET", "/api/teller/teller-log");
+          const transfers = (data.log || [])
+            .filter((t) => t.type === "transfer")
+            .slice(0, 10);
+          document.getElementById("recentTransfers").innerHTML =
+            transfers.length
+              ? transfers
+                  .map(
+                    (t) => `
+          <div class="tx-item">
+            <div class="tx-icon" style="background:var(--blue-bg);">🔄</div>
+            <div class="tx-info">
+              <div class="tx-desc">${t.desc || t.description || ""}</div>
+              <div class="tx-meta">${(t.time || t.created_at || "").substring(0, 16)} · ${t.emp || t.teller_name || ""}</div>
+            </div>
+            <div class="tx-amount dr">${fmt(t.amount)} EGP</div>
+          </div>
+        `,
+                  )
+                  .join("")
+              : '<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">لا توجد تحويلات</div>';
+        } catch (e) {
+          document.getElementById("recentTransfers").innerHTML =
+            '<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">تعذّر التحميل</div>';
+        }
+      }
+
+      // ════════════════════════════════════
+      //  CUSTOMERS GRID
+      // ════════════════════════════════════
+      async function loadCustomersGrid() {
+        await loadUsersFromDB();
+        searchCustomers();
+      }
+
+      function searchCustomers() {
+        const q = (
+          document.getElementById("custSearch")?.value || ""
+        ).toLowerCase();
+        const filter = document.getElementById("custFilter")?.value || "";
+        let users = DB_users;
+        if (q)
+          users = users.filter(
+            (u) =>
+              (u.firstName + " " + u.lastName).toLowerCase().includes(q) ||
+              u.accountNumber.toLowerCase().includes(q) ||
+              u.email.toLowerCase().includes(q) ||
+              (u.nid || "").includes(q),
+          );
+        if (filter === "active") users = users.filter((u) => !u.frozen);
+        if (filter === "frozen") users = users.filter((u) => u.frozen);
+        if (filter === "premium")
+          users = users.filter((u) => u.accountType === "premium");
+
+        document.getElementById("custResultsGrid").innerHTML = users.length
+          ? users
+              .map(
+                (u) => `
+        <div class="customer-card" onclick="openCustDetailModal('${u.id}')">
+          <div class="cust-top">
+            <div class="cust-av" style="background:${getColor(u.id)};">${u.firstName[0]}</div>
+            <div style="flex:1;">
+              <div class="cust-name">${u.firstName} ${u.lastName}</div>
+              <div class="cust-num">${u.accountNumber}</div>
+            </div>
+            <span class="badge ${u.frozen ? "red" : u.accountType === "premium" ? "amber" : "green"}">
+              ${u.frozen ? "مجمّد" : u.accountType === "premium" ? "بريميوم" : "نشط"}
+            </span>
+          </div>
+          <div class="cust-stats">
+            <div class="cust-stat"><div class="cust-stat-label">الرصيد</div><div class="cust-stat-val" style="color:var(--green);">${fmt(u.balance)}</div></div>
+            <div class="cust-stat"><div class="cust-stat-label">البريد</div><div class="cust-stat-val" style="font-size:0.68rem;">${u.email}</div></div>
+            <div class="cust-stat"><div class="cust-stat-label">الهاتف</div><div class="cust-stat-val" style="font-size:0.75rem;">${u.phone}</div></div>
+            <div class="cust-stat"><div class="cust-stat-label">النوع</div><div class="cust-stat-val">${u.accountType}</div></div>
+          </div>
+        </div>
+      `,
+              )
+              .join("")
+          : '<div style="color:var(--text3);text-align:center;padding:40px;grid-column:1/-1;">لا توجد نتائج</div>';
+      }
+
+      // ════════════════════════════════════
+      //  CUSTOMER DETAIL MODAL
+      // ════════════════════════════════════
+      async function openCustDetailModal(id) {
+        const u = DB_users.find((u) => u.id === id);
+        if (!u) return;
+        const types = {
+          standard: "عادي",
+          premium: "بريميوم",
+          business: "أعمال",
+        };
+
+        let txs = [];
+        try {
+          const txData = await apiCall(
+            "GET",
+            `/api/teller/transactions/${u.accountId}`,
+          );
+          txs = (txData.transactions || []).slice(0, 10).map((t) => ({
+            ...t,
+            desc: t.description || t.desc || "",
+            amount: parseFloat(t.amount),
+            date: (t.created_at || t.date || "").substring(0, 10),
+            type: t.type,
+          }));
+        } catch (e) {}
+
+        document.getElementById("custDetailTitle").textContent =
+          `${u.firstName} ${u.lastName} — ${u.accountNumber}`;
+        document.getElementById("custDetailBody").innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+      <div style="width:52px;height:52px;border-radius:50%;background:${getColor(u.id)};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:white;">${u.firstName[0]}</div>
+      <div>
+        <div style="font-size:1rem;font-weight:700;">${u.firstName} ${u.lastName}</div>
+        <div style="font-family:monospace;font-size:0.75rem;color:var(--text3);">${u.accountNumber}</div>
+        <span class="badge ${u.frozen ? "red" : "green"}" style="margin-top:4px;">${u.frozen ? "مجمّد" : "نشط"}</span>
+      </div>
+      <div style="margin-right:auto;text-align:left;">
+        <div style="font-size:1.4rem;font-weight:900;color:var(--green);">${fmt(u.balance)}</div>
+        <div style="font-size:0.72rem;color:var(--text3);">EGP</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+      ${[
+        ["البريد", u.email],
+        ["الهاتف", u.phone],
+        ["رقم الهوية", u.nid],
+        ["نوع الحساب", types[u.accountType] || "عادي"],
+      ]
+        .map(
+          ([k, v]) => `
+        <div style="background:var(--bg3);border-radius:var(--r);padding:8px 12px;">
+          <div style="font-size:0.68rem;color:var(--text3);margin-bottom:2px;">${k}</div>
+          <div style="font-size:0.82rem;font-weight:500;">${v || "-"}</div>
+        </div>
+      `,
+        )
+        .join("")}
+    </div>
+    <div style="font-size:0.8rem;font-weight:600;color:var(--text2);margin-bottom:8px;">آخر 10 معاملات (من قاعدة البيانات)</div>
+    ${
+      txs.length
+        ? txs
+            .map(
+              (t) => `
+        <div style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(48,54,61,0.4);font-size:0.78rem;">
+          <span style="color:${t.type === "credit" ? "var(--green)" : "var(--red)"};font-weight:700;min-width:60px;">${t.type === "credit" ? "+" : "-"}${fmt(t.amount)}</span>
+          <span style="flex:1;color:var(--text2);">${t.desc}</span>
+          <span style="color:var(--text3);white-space:nowrap;">${t.date}</span>
+        </div>
+      `,
+            )
+            .join("")
+        : '<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:12px;">لا توجد معاملات</div>'
+    }
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('custDetailModal');showView('teller');setTimeout(()=>{document.getElementById('tellerSearch').value='${u.firstName}';searchTellerCustomer();selectTellerCustomer('${u.id}');},200);">💰 فتح في الشباك</button>
+      <button class="btn btn-ghost btn-sm" onclick="selectedCustomer=DB_users.find(u=>u.id==='${u.id}');closeModal('custDetailModal');openEditCustomer();">✏️ تعديل البيانات</button>
+      <button class="btn btn-${u.frozen ? "success" : "ghost"} btn-sm" onclick="selectedCustomer=DB_users.find(u=>u.id==='${u.id}');closeModal('custDetailModal');toggleFreeze();">${u.frozen ? "🔓 إلغاء التجميد" : "❄️ تجميد الحساب"}</button>
+    </div>
+  `;
+        openModal("custDetailModal");
+      }
+
+      // ════════════════════════════════════
+      //  EDIT CUSTOMER
+      // ════════════════════════════════════
+      function openEditCustomer() {
+        if (!selectedCustomer) return;
+        document.getElementById("edit-first").value =
+          selectedCustomer.firstName;
+        document.getElementById("edit-last").value = selectedCustomer.lastName;
+        document.getElementById("edit-email").value = selectedCustomer.email;
+        document.getElementById("edit-phone").value = selectedCustomer.phone;
+        document.getElementById("edit-type").value =
+          selectedCustomer.accountType;
+        document.getElementById("edit-pass").value = "";
+        openModal("editCustModal");
+      }
+
+      async function saveEditCustomer() {
+        if (!selectedCustomer) return;
+        const data = {
+          firstName: document.getElementById("edit-first").value.trim(),
+          lastName: document.getElementById("edit-last").value.trim(),
+          email: document.getElementById("edit-email").value.trim(),
+          phone: document.getElementById("edit-phone").value.trim(),
+          accountType: document.getElementById("edit-type").value,
+        };
+        showSpinner();
+        try {
+          await apiCall(
+            "PUT",
+            `/api/teller/accounts/${selectedCustomer.accountId}`,
+            data,
+          );
+          await addAudit(
+            `تعديل بيانات حساب ${selectedCustomer.accountNumber} (${data.firstName} ${data.lastName})`,
+          );
+          closeModal("editCustModal");
+          await loadUsersFromDB();
+          await selectTellerCustomer(selectedCustomer.id);
+          hideSpinner();
+          showAlert("✅ تم حفظ التعديلات", "success");
+        } catch (e) {
+          hideSpinner();
+          showAlert("❌ " + e.message, "error");
+        }
+      }
+
+      // ════════════════════════════════════
+      //  NEW CUSTOMER
+      // ════════════════════════════════════
+      async function createCustomer() {
+        const first = document.getElementById("nc-first").value.trim();
+        const last = document.getElementById("nc-last").value.trim();
+        const email = document.getElementById("nc-email").value.trim();
+        const phone = document.getElementById("nc-phone").value.trim();
+        const nid = document.getElementById("nc-nid").value.trim();
+        const type = document.getElementById("nc-type").value;
+        const bal =
+          parseFloat(document.getElementById("nc-balance").value) || 0;
+        const pass = document.getElementById("nc-pass").value;
+        const pass2 = document.getElementById("nc-pass2").value;
+
+        if (!first || !last || !email || !phone || !nid || !pass) {
+          showAlert("يرجى ملء جميع الحقول المطلوبة", "error");
+          return;
+        }
+        if (pass !== pass2) {
+          showAlert("كلمتا المرور غير متطابقتين", "error");
+          return;
+        }
+        if (pass.length < 6) {
+          showAlert("كلمة المرور يجب أن تكون 6 أحرف على الأقل", "error");
+          return;
+        }
+
+        showSpinner();
+        try {
+          const res = await apiCall("POST", "/api/teller/create-customer", {
+            firstName: first,
+            lastName: last,
+            email,
+            phone,
+            nid,
+            password: pass,
+            accountType: type,
+          });
+          const accNum = res.accountNumber || "AURA-???";
+          // If initial balance > 0, deposit it
+          if (bal > 0) {
+            await loadUsersFromDB();
+            const nu = DB_users.find(
+              (u) => u.email.toLowerCase() === email.toLowerCase(),
+            );
+            if (nu && nu.accountId) {
+              try {
+                await apiCall("POST", "/api/teller/deposit", {
+                  accountId: nu.accountId,
+                  amount: bal,
+                  note: "رصيد افتتاحي",
+                  tellerName: currentEmp.name,
+                  tellerId: currentEmp.id,
+                  customerName: `${first} ${last}`,
+                });
+              } catch (e2) {
+                console.warn("initial deposit failed:", e2.message);
+              }
+            }
+          }
+          await addAudit(`إنشاء حساب جديد: ${first} ${last} (${accNum})`);
+          await loadUsersFromDB();
+          hideSpinner();
+          [
+            "nc-first",
+            "nc-last",
+            "nc-email",
+            "nc-phone",
+            "nc-nid",
+            "nc-balance",
+            "nc-pass",
+            "nc-pass2",
+          ].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.value = "";
+          });
+          showAlert(
+            `✅ تم إنشاء حساب ${first} ${last} برقم ${accNum}`,
+            "success",
+          );
+        } catch (e) {
+          hideSpinner();
+          showAlert("❌ " + (e.message || "فشل إنشاء الحساب"), "error");
+        }
+      }
+
+      // ════════════════════════════════════
+      //  REPORTS — from PostgreSQL
+      // ════════════════════════════════════
+      async function loadReports() {
+        try {
+          const logData = await apiCall("GET", "/api/teller/teller-log-today");
+          const txs = logData.log || [];
+
+          const deposits = txs.filter((t) => t.type === "deposit");
+          const withdraws = txs.filter(
+            (t) => t.type === "withdrawal" || t.type === "withdraw",
+          );
+          const transfers = txs.filter((t) => t.type === "transfer");
+          const bills = txs.filter((t) => t.type === "bill");
+
+          document.getElementById("reportStats").innerHTML = `
+      <div class="stat-card green">
+        <div class="stat-label">إجمالي الإيداعات</div>
+        <div class="stat-val green">${fmt(deposits.reduce((s, t) => s + t.amount, 0))}</div>
+        <div class="stat-sub">${deposits.length} عملية</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">إجمالي السحوبات</div>
+        <div class="stat-val red">${fmt(withdraws.reduce((s, t) => s + t.amount, 0))}</div>
+        <div class="stat-sub">${withdraws.length} عملية</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">التحويلات</div>
+        <div class="stat-val blue">${fmt(transfers.reduce((s, t) => s + t.amount, 0))}</div>
+        <div class="stat-sub">${transfers.length} عملية</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-label">فواتير مدفوعة</div>
+        <div class="stat-val amber">${fmt(bills.reduce((s, t) => s + t.amount, 0))}</div>
+        <div class="stat-sub">${bills.length} فاتورة</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">إجمالي العمليات</div>
+        <div class="stat-val purple">${txs.length}</div>
+        <div class="stat-sub">عملية اليوم</div>
+      </div>
+    `;
+
+          const icons = {
+            deposit: "💵 إيداع",
+            withdrawal: "💸 سحب",
+            withdraw: "💸 سحب",
+            transfer: "🔄 تحويل",
+            bill: "🧾 فاتورة",
+          };
+          const badgeClasses = {
+            deposit: "green",
+            withdrawal: "red",
+            withdraw: "red",
+            transfer: "blue",
+            bill: "amber",
+          };
+
+          document.getElementById("reportTableBody").innerHTML = txs.length
+            ? txs
+                .map(
+                  (t) => `
+          <tr>
+            <td style="font-family:monospace;font-size:0.75rem;">${(t.time || t.created_at || "").substring(0, 16)}</td>
+            <td>${t.customer || t.customer_name || ""}</td>
+            <td><span class="badge ${badgeClasses[t.type] || "blue"}">${icons[t.type] || t.type}</span></td>
+            <td style="font-weight:700;color:${t.type === "deposit" ? "var(--green)" : "var(--red)"};">${fmt(t.amount)} EGP</td>
+            <td style="color:var(--text3);">${t.emp || t.teller_name || ""}</td>
+          </tr>
+        `,
+                )
+                .join("")
+            : '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text3);">لا توجد عمليات اليوم</td></tr>';
+        } catch (e) {
+          document.getElementById("reportStats").innerHTML =
+            `<div style="color:var(--red);padding:20px;">خطأ: ${e.message}</div>`;
+        }
+      }
+
+      // ════════════════════════════════════
+      //  AUDIT LOG — from PostgreSQL
+      // ════════════════════════════════════
+      async function addAudit(action) {
+        try {
+          await apiCall("POST", "/api/teller/audit-log", {
+            action: action,
+            actorName: currentEmp?.name || "النظام",
+            actorId: currentEmp?.id || "",
+            actorRole: currentEmp?.role || "teller",
+          });
+        } catch (e) {
+          console.warn("addAudit failed:", e.message);
+        }
+      }
+
+      async function loadAuditLog() {
+        try {
+          const data = await apiCall("GET", "/api/teller/audit-log");
+          const logs = data.log || [];
+          const body = document.getElementById("auditLogBody");
+          if (!logs.length) {
+            body.innerHTML =
+              '<div style="color:var(--text3);text-align:center;padding:30px;">السجل فارغ</div>';
+            return;
+          }
+          body.innerHTML = logs
+            .map(
+              (a) => `
+      <div class="audit-item">
+        <span class="audit-time">${(a.time || a.created_at || "").substring(0, 19)}</span>
+        <span class="audit-action">${a.action}</span>
+        <span class="audit-by">${a.by || a.actor_name || ""}</span>
+      </div>
+    `,
+            )
+            .join("");
+        } catch (e) {
+          document.getElementById("auditLogBody").innerHTML =
+            `<div style="color:var(--red);padding:20px;">خطأ في التحميل: ${e.message}</div>`;
+        }
+      }
+
+      async function clearAuditLog() {
+        confirm2(
+          "مسح السجل",
+          "هل أنت متأكد من مسح سجل العمليات كاملاً؟",
+          async () => {
+            try {
+              await apiCall("DELETE", "/api/teller/audit-log");
+              await loadAuditLog();
+              showAlert("✅ تم مسح السجل", "info");
+            } catch (e) {
+              showAlert("❌ " + e.message, "error");
+            }
+          },
+        );
+      }
+
+      // ════════════════════════════════════
+      //  EMPLOYEES — Admin/Supervisor only
+      // ════════════════════════════════════
+      async function loadEmployees() {
+        try {
+          const data = await apiCall("GET", "/api/admin/employees");
+          const employees = data.employees || [];
+          const roles = { teller: "صرّاف", supervisor: "مشرف", admin: "مدير" };
+          const colors = {
+            teller: "green",
+            supervisor: "blue",
+            admin: "purple",
+          };
+          document.getElementById("empTableBody").innerHTML = employees
+            .map(
+              (e) => `
+      <tr>
+        <td>${e.name}</td>
+        <td style="font-family:monospace;">${e.username}</td>
+        <td><span class="badge ${colors[e.role] || "blue"}">${roles[e.role] || e.role}</span></td>
+        <td>${e.branch}</td>
+        <td><span class="badge ${e.active ? "green" : "red"}">${e.active ? "نشط" : "موقوف"}</span></td>
+        <td>
+          ${
+            currentEmp?.role === "admin"
+              ? `
+            <button class="btn btn-ghost btn-sm" onclick="toggleEmpStatus('${e.id}',${!e.active})">${e.active ? "إيقاف" : "تفعيل"}</button>
+            ${e.id !== currentEmp?.id ? `<button class="btn btn-danger btn-sm" style="margin-right:6px;" onclick="deleteEmp('${e.id}','${e.name}')">حذف</button>` : ""}
+          `
+              : '<span style="color:var(--text3);font-size:0.75rem;">للعرض فقط</span>'
+          }
+        </td>
+      </tr>
+    `,
+            )
+            .join("");
+        } catch (e) {
+          document.getElementById("empTableBody").innerHTML =
+            `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--red);">خطأ: ${e.message}</td></tr>`;
+        }
+      }
+
+      function openAddEmpModal() {
+        openModal("addEmpModal");
+      }
+
+      async function addEmployee() {
+        const name = document.getElementById("ne-name").value.trim();
+        const uname = document.getElementById("ne-user").value.trim();
+        const pwd = document.getElementById("ne-pass").value;
+        const role = document.getElementById("ne-role").value;
+        const branch = document.getElementById("ne-branch").value.trim() || "";
+        const shift = document.getElementById("ne-shift").value;
+        if (!name || !uname || !pwd) {
+          showAlert("يرجى ملء جميع الحقول", "error");
+          return;
+        }
+        showSpinner();
+        try {
+          await apiCall("POST", "/api/admin/employees", {
+            name,
+            username: uname,
+            password: pwd,
+            role,
+            branch,
+            shift,
+          });
+          await addAudit(`إضافة موظف جديد: ${name} (${role})`);
+          closeModal("addEmpModal");
+          ["ne-name", "ne-user", "ne-pass", "ne-branch"].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.value = "";
+          });
+          await loadEmployees();
+          hideSpinner();
+          showAlert(`✅ تم إضافة الموظف ${name} بنجاح`, "success");
+        } catch (e) {
+          hideSpinner();
+          showAlert("❌ " + e.message, "error");
+        }
+      }
+
+      async function toggleEmpStatus(id, newStatus) {
+        showSpinner();
+        try {
+          await apiCall("PUT", `/api/admin/employees/${id}`, {
+            active: newStatus,
+          });
+          await addAudit(`${newStatus ? "تفعيل" : "تعطيل"} حساب موظف`);
+          await loadEmployees();
+          hideSpinner();
+          showAlert("✅ تم تحديث حالة الموظف", "success");
+        } catch (e) {
+          hideSpinner();
+          showAlert("❌ " + e.message, "error");
+        }
+      }
+
+      async function deleteEmp(id, name) {
+        if (currentEmp && currentEmp.id === id) {
+          showAlert("لا يمكنك حذف حسابك الحالي", "error");
+          return;
+        }
+        confirm2("تأكيد الحذف", `حذف الموظف ${name}؟`, async () => {
+          showSpinner();
+          try {
+            await apiCall("DELETE", `/api/admin/employees/${id}`);
+            await addAudit(`حذف الموظف: ${name}`);
+            await loadEmployees();
+            hideSpinner();
+            showAlert("✅ تم حذف الموظف", "success");
+          } catch (e) {
+            hideSpinner();
+            showAlert("❌ " + e.message, "error");
+          }
+        });
+      }
+
+      // ════════════════════════════════════
+      //  ALL ACCOUNTS — Admin/Supervisor
+      // ════════════════════════════════════
+      function loadAllAccounts() {
+        const users = DB_users;
+        const total = users.reduce((s, u) => s + u.balance, 0);
+        document.getElementById("allAccStats").innerHTML = `
+    <div class="stat-card blue"><div class="stat-label">عدد الحسابات</div><div class="stat-val blue">${users.length}</div></div>
+    <div class="stat-card green"><div class="stat-label">إجمالي الأرصدة</div><div class="stat-val green">${fmt(total)}</div><div class="stat-sub">EGP</div></div>
+    <div class="stat-card amber"><div class="stat-label">حسابات بريميوم</div><div class="stat-val amber">${users.filter((u) => u.accountType === "premium").length}</div></div>
+    <div class="stat-card red"><div class="stat-label">حسابات مجمّدة</div><div class="stat-val red">${users.filter((u) => u.frozen).length}</div></div>
+  `;
+        const types = {
+          standard: "عادي",
+          premium: "بريميوم",
+          business: "أعمال",
+        };
+        document.getElementById("allAccBody").innerHTML = users
+          .map(
+            (u) => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:${getColor(u.id)};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;">${u.firstName[0]}</div>
+          ${u.firstName} ${u.lastName}
+        </div>
+      </td>
+      <td style="font-family:monospace;">${u.accountNumber}</td>
+      <td><span class="badge ${u.accountType === "premium" ? "amber" : u.accountType === "business" ? "purple" : "blue"}">${types[u.accountType] || "عادي"}</span></td>
+      <td style="font-weight:700;color:var(--green);">${fmt(u.balance)} EGP</td>
+      <td><span class="badge ${u.frozen ? "red" : "green"}">${u.frozen ? "مجمّد" : "نشط"}</span></td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="openCustDetailModal('${u.id}')">عرض</button>
+        <button class="btn btn-ghost btn-sm" style="margin-right:6px;"
+          onclick="selectedCustomer=DB_users.find(u=>u.id==='${u.id}');toggleFreeze()">
+          ${u.frozen ? "رفع التجميد" : "تجميد"}
+        </button>
+      </td>
+    </tr>
+  `,
+          )
+          .join("");
+      }
+
+      // ════════════════════════════════════
+      //  RECEIPT
+      // ════════════════════════════════════
+      function showReceipt(opType, user, amount, txType, note, newBalance) {
+        const refNum = "TX" + Date.now().toString().slice(-8);
+        document.getElementById("receiptBody").innerHTML = `
+    <div class="receipt">
+      <div class="receipt-title">🏦 Aura Bank — إيصال عملية</div>
+      <hr>
+      رقم الإيصال: ${refNum}
+      <br>التاريخ والوقت: ${new Date().toLocaleString("ar-EG")}
+      <br>الموظف: ${currentEmp?.name} / ${currentEmp?.branch}
+      <hr>
+      نوع العملية: ${opType}
+      <br>اسم العميل: ${user.firstName} ${user.lastName}
+      <br>رقم الحساب: ${user.accountNumber}
+      <br>الملاحظة: ${note}
+      <hr>
+      <div class="receipt-total">${txType === "credit" ? "＋" : "－"} ${fmt(amount)} EGP</div>
+      الرصيد بعد العملية: ${fmt(newBalance || 0)} EGP
+      <hr>
+      شكراً لتعاملكم مع Aura Bank
+    </div>
+  `;
+        openModal("receiptModal");
+      }
+
+      // ════════════════════════════════════
+      //  HELPERS
+      // ════════════════════════════════════
+      function fmt(n) {
+        return new Intl.NumberFormat("ar-EG").format(
+          Math.round((n || 0) * 100) / 100,
+        );
+      }
+
+      function getColor(id) {
+        const cs = [
+          "#388BFD",
+          "#3FB950",
+          "#BC8CFF",
+          "#D29922",
+          "#39D2F0",
+          "#F85149",
+          "#E3B341",
+          "#58A6FF",
+        ];
+        let h = 0;
+        for (let i = 0; i < (id || "x").length; i++)
+          h = (h * 31 + (id || "x").charCodeAt(i)) & 0xffff;
+        return cs[h % cs.length];
+      }
+
+      function startClock() {
+        const update = () => {
+          const el = document.getElementById("tbTime");
+          if (el) el.textContent = new Date().toLocaleTimeString("ar-EG");
+        };
+        update();
+        setInterval(update, 1000);
+      }
+
+      // ════════════════════════════════════
+      //  MODALS
+      // ════════════════════════════════════
+      function openModal(id) {
+        document.getElementById(id).classList.add("open");
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("open");
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".modal-bg").forEach((m) => {
+          m.addEventListener("click", (e) => {
+            if (e.target === m) m.classList.remove("open");
+          });
+        });
+      });
+
+      function confirm2(title, msg, cb) {
+        document.getElementById("confirmTitle").textContent = title;
+        document.getElementById("confirmMsg").textContent = msg;
+        document.getElementById("confirmOkBtn").onclick = () => {
+          closeModal("confirmModal");
+          cb && cb();
+        };
+        openModal("confirmModal");
+      }
+
+      // ════════════════════════════════════
+      //  ALERTS
+      // ════════════════════════════════════
+      function showAlert(msg, type = "success") {
+        const bar = document.getElementById("alertBar");
+        const a = document.createElement("div");
+        a.className = `alert ${type}`;
+        const icons = { success: "✅", error: "❌", info: "ℹ️" };
+        a.innerHTML = `<span class="a-icon">${icons[type] || "ℹ️"}</span><span class="a-msg">${msg}</span>`;
+        bar.appendChild(a);
+        setTimeout(() => (a.style.opacity = "0"), 3500);
+        setTimeout(() => a.remove(), 4000);
+      }
+
+      function showErr(id, msg) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.style.display = "block";
+        setTimeout(() => (el.style.display = "none"), 4000);
+      }
+
+      function showSpinner() {
+        document.getElementById("spinnerOverlay").style.display = "flex";
+      }
+      function hideSpinner() {
+        document.getElementById("spinnerOverlay").style.display = "none";
+      }
+
+      // ════════════════════════════════════
+      //  INIT
+      // ════════════════════════════════════
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Show login by default
+        document.getElementById("loginPage").style.display = "flex";
+        document.getElementById("app").style.display = "none";
+
+        startClock();
+
+        // Try to restore session
+        const saved = sessionStorage.getItem("aura_teller_emp");
+        const token = EMP_TOKEN.get();
+        if (saved && token) {
+          try {
+            const emp = JSON.parse(saved);
+            await loginSuccess(emp);
+          } catch (e) {
+            EMP_TOKEN.clear();
+            console.log("Session restore failed:", e.message);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

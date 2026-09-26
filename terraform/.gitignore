@@ -1,0 +1,29 @@
+# Terraform state files — NEVER commit these
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Terraform plan files
+*.tfplan
+*.plan
+
+# Terraform vars with secrets
+terraform.tfvars
+*.auto.tfvars
+
+# Terraform cache and plugins
+.terraform/
+.terraform.lock.hcl
+
+# Lambda build artifacts
+**/db_init_build/
+**/db_init_lambda.zip
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp

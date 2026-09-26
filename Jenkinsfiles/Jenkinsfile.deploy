@@ -1,0 +1,485 @@
+﻿// ============================================================
+// AuraBank — Pipeline 1: Full Deploy (من الصفر)
+// ============================================================
+pipeline {
+    agent any
+
+    options {
+        timeout(time: 60, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+
+    environment {
+        AWS_REGION      = 'us-east-1'
+        AWS_ACCOUNT_ID  = '816709079108'
+        ENV             = 'dev'
+        PROJECT         = 'aurabank'
+        REGISTRY        = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        TF_DIR          = 'terraform/envs/dev'
+        CLUSTER         = 'aurabank-dev-cluster'
+    }
+
+    parameters {
+        string(name: 'IMAGE_TAG', defaultValue: 'v1.0.0', description: 'Docker image tag')
+    }
+
+    stages {
+
+        // ── 1. Install Dependencies ────────────────────────────
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    echo "=== Checking dependencies ==="
+
+                    # AWS CLI — لو موجودة نعمل update، لو مش موجودة نعمل install
+                    if command -v aws &>/dev/null; then
+                        echo "AWS CLI already installed: $(aws --version)"
+                    else
+                        echo "Installing AWS CLI..."
+                        sudo rm -rf /tmp/aws /tmp/awscliv2.zip
+                        curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+                        unzip -q /tmp/awscliv2.zip -d /tmp
+                        sudo /tmp/aws/install --update
+                        sudo rm -rf /tmp/aws /tmp/awscliv2.zip
+                        echo "AWS CLI installed: $(aws --version)"
+                    fi
+
+                    # Terraform
+                    if command -v terraform &>/dev/null; then
+                        echo "Terraform already installed: $(terraform version -json | python3 -c 'import sys,json; print(json.load(sys.stdin)[\"terraform_version\"])')"
+                    else
+                        echo "Installing Terraform..."
+                        curl -fsSL "https://releases.hashicorp.com/terraform/1.7.5/terraform_1.7.5_linux_amd64.zip" \
+                            -o /tmp/terraform.zip
+                        sudo unzip -q /tmp/terraform.zip -d /usr/local/bin
+                        sudo chmod +x /usr/local/bin/terraform
+                        rm -f /tmp/terraform.zip
+                        echo "Terraform installed"
+                    fi
+                    terraform --version
+
+                    # Docker
+                    if command -v docker &>/dev/null; then
+                        echo "Docker already installed: $(docker --version)"
+                    else
+                        echo "❌ Docker not found — ده لازم يكون مثبت على الـ Jenkins server"
+                        exit 1
+                    fi
+
+                    echo "✅ All dependencies ready"
+                '''
+            }
+        }
+
+        // ── 2. Checkout ────────────────────────────────────────
+        stage('Checkout') {
+            steps {
+                checkout scm
+                sh 'echo "✅ Code checked out: $(git log --oneline -1)"'
+            }
+        }
+
+        // ── 3. Bootstrap Terraform State ───────────────────────
+        stage('Bootstrap State') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    sh '''
+                        echo "=== Bootstrapping Terraform State ==="
+                        cd terraform/scripts
+                        chmod +x bootstrap_state.sh
+                        BUCKET="aurabank-terraform-state-dev"
+                        if aws s3api head-bucket --bucket "$BUCKET" --region ${AWS_REGION} 2>/dev/null; then
+                            echo "✅ State bucket already exists — skipping bootstrap"
+                        else
+                            ./bootstrap_state.sh dev ${AWS_REGION}
+                            echo "✅ Bootstrap complete"
+                        fi
+                    '''
+                }
+            }
+        }
+
+        // ── 4. Build Lambda Zip ────────────────────────────────
+        stage('Build Lambda') {
+            steps {
+                sh '''
+                    echo "=== Building Lambda Zip ==="
+                    cd terraform/modules/rds
+                    chmod +x build_lambda.sh
+                    ./build_lambda.sh
+                    echo "✅ Lambda zip built"
+                '''
+            }
+        }
+
+        // ── 6. Terraform Init ──────────────────────────────────
+
+        stage('Terraform Init') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds'],
+                    file(credentialsId: 'terraform-tfvars-dev', variable: 'TFVARS_FILE')
+                ]) {
+                    sh '''
+                        echo "=== Terraform Init ==="
+                        cd ${TF_DIR}
+
+                        # انسخ الـ tfvars من Jenkins Credentials
+                        rm -f terraform.tfvars && cp "$TFVARS_FILE" terraform.tfvars
+
+                        mkdir -p $HOME/.terraform.d/plugin-cache
+                        export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+
+                        terraform init -reconfigure
+                        echo "✅ Terraform initialized"
+                    '''
+                }
+            }
+        }
+
+        // ── 7. Import Existing Secrets ─────────────────────────
+        stage('Import Secrets') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds'],
+                    file(credentialsId: 'terraform-tfvars-dev', variable: 'TFVARS_FILE')
+                ]) {
+                    sh '''
+                        echo "=== Import existing secrets (if any) ==="
+                        cd ${TF_DIR}
+
+                        rm -f terraform.tfvars && cp "$TFVARS_FILE" terraform.tfvars
+
+                        # دالة تعمل import لو الـ secret موجود على AWS
+                        # لو موجود في الـ state خلاص بتتجاهله بسبب || true
+                        tf_import_if_exists() {
+                            TF_ADDR="$1"
+                            AWS_SECRET_ID="$2"
+                            if aws secretsmanager describe-secret \
+                                --secret-id "$AWS_SECRET_ID" \
+                                --region ${AWS_REGION} \
+                                --output text --query "Name" 2>/dev/null | grep -q "."; then
+                                echo "  → Importing: $AWS_SECRET_ID"
+                                terraform import \
+                                    -var-file=terraform.tfvars \
+                                    -var="image_tag=${IMAGE_TAG}" \
+                                    "$TF_ADDR" "$AWS_SECRET_ID" 2>&1 || true
+                            else
+                                echo "  → Not found on AWS, will create: $AWS_SECRET_ID"
+                            fi
+                        }
+
+                        tf_import_if_exists "module.secrets.aws_secretsmanager_secret.rds_master"                    "aurabank/dev/rds/master"
+                        tf_import_if_exists 'module.secrets.aws_secretsmanager_secret.schema_creds["transactions"]'  "aurabank/dev/rds/transactions"
+                        tf_import_if_exists 'module.secrets.aws_secretsmanager_secret.schema_creds["auth"]'          "aurabank/dev/rds/auth"
+                        tf_import_if_exists 'module.secrets.aws_secretsmanager_secret.schema_creds["notifications"]' "aurabank/dev/rds/notifications"
+                        tf_import_if_exists 'module.secrets.aws_secretsmanager_secret.schema_creds["accounts"]'      "aurabank/dev/rds/accounts"
+                        tf_import_if_exists "module.secrets.aws_secretsmanager_secret.jwt"                           "aurabank/dev/jwt-secret"
+
+                        echo "✅ Import done"
+                    '''
+                }
+            }
+        }
+
+        // ── 8. Terraform Plan ──────────────────────────────────
+        stage('Terraform Plan') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds'],
+                    file(credentialsId: 'terraform-tfvars-dev', variable: 'TFVARS_FILE')
+                ]) {
+                    sh '''
+                        echo "=== Terraform Plan ==="
+                        cd ${TF_DIR}
+                        rm -f terraform.tfvars && cp "$TFVARS_FILE" terraform.tfvars
+
+                        terraform plan \
+                            -var-file=terraform.tfvars \
+                            -var="image_tag=${IMAGE_TAG}" \
+                            -out=tfplan
+                        echo "✅ Plan complete"
+                    '''
+                }
+            }
+        }
+
+        // ── 9. Terraform Apply ─────────────────────────────────
+        stage('Terraform Apply') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    sh '''
+                        echo "=== Terraform Apply ==="
+                        cd ${TF_DIR}
+                        terraform apply -auto-approve tfplan
+                        echo "✅ Infrastructure deployed"
+                    '''
+                }
+            }
+        }
+
+        // ── 10. Fix Secret DBNames ────────────────────────────
+        stage('Fix Secret DBNames') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    sh '''
+                        echo "=== Fixing dbname in secrets ==="
+
+                        cat > /tmp/fix_secrets.py << 'SCRIPTEOF'
+import json, subprocess, re
+
+schemas = ['auth', 'accounts', 'transactions', 'notifications']
+region  = 'us-east-1'
+env     = 'dev'
+
+for schema in schemas:
+    secret_id = f'aurabank/{env}/rds/{schema}'
+
+    r = subprocess.run(
+        ['aws', 'secretsmanager', 'get-secret-value',
+         '--secret-id', secret_id,
+         '--region', region,
+         '--query', 'SecretString',
+         '--output', 'text'],
+        capture_output=True, text=True, check=True
+    )
+
+    raw = r.stdout.strip()
+
+    # Try standard JSON first
+    try:
+        current = json.loads(raw)
+    except json.JSONDecodeError:
+        # Handle non-quoted format: {key:value,key:value}
+        current = {}
+        for match in re.finditer(r'(\\w+):([^,}]+)', raw):
+            current[match.group(1)] = match.group(2).strip()
+
+    # Fix dbname and schema
+    current['dbname'] = 'aurabank'
+    current['schema'] = schema
+    new_val = json.dumps(current)
+
+    subprocess.run(
+        ['aws', 'secretsmanager', 'update-secret',
+         '--secret-id', secret_id,
+         '--region', region,
+         '--secret-string', new_val,
+         '--query', 'Name',
+         '--output', 'text'],
+        capture_output=True, text=True, check=True
+    )
+    print(f'  Fixed: {secret_id}')
+
+print('All secrets fixed')
+SCRIPTEOF
+
+                        python3 /tmp/fix_secrets.py
+                        echo "✅ Secrets fixed"
+                    '''
+                }
+            }
+        }
+
+        // ── 11. Deploy Lambda ─────────────────────────────────
+        stage('Deploy Lambda') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    sh '''
+                        echo "=== Uploading Lambda Zip to AWS ==="
+                        ZIP_PATH="terraform/modules/rds/db_init_lambda.zip"
+
+                        if [ ! -f "$ZIP_PATH" ]; then
+                            echo "❌ Lambda zip not found at $ZIP_PATH"
+                            exit 1
+                        fi
+
+                        # انتظر الـ Lambda تكون active (Terraform أنشأها للتو)
+                        aws lambda wait function-active \
+                            --function-name aurabank-${ENV}-db-init \
+                            --region ${AWS_REGION}
+
+                        # ارفع الـ zip الجديد المبني بـ python3.12
+                        aws lambda update-function-code \
+                            --function-name aurabank-${ENV}-db-init \
+                            --zip-file fileb://$ZIP_PATH \
+                            --region ${AWS_REGION} \
+                            --query 'FunctionArn' \
+                            --output text
+
+                        # انتظر الـ update يخلص قبل ما نكمل
+                        aws lambda wait function-updated \
+                            --function-name aurabank-${ENV}-db-init \
+                            --region ${AWS_REGION}
+
+                        echo "✅ Lambda deployed successfully"
+                    '''
+                }
+            }
+        }
+
+        // ── 12. ECR Login ───────────────────────────────────────
+        stage('ECR Login') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    sh '''
+                        echo "=== Logging in to ECR ==="
+                        aws ecr get-login-password --region ${AWS_REGION} | \
+                            docker login --username AWS --password-stdin ${REGISTRY}
+                        echo "✅ ECR login successful"
+                    '''
+                }
+            }
+        }
+
+        // ── 13. Build & Push Docker Images ─────────────────────
+        stage('Build & Push Images') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    sh '''
+                        echo "=== Building and pushing images ==="
+                        chmod +x terraform/scripts/push_images.sh
+                        ./terraform/scripts/push_images.sh \
+                            ${ENV} ${AWS_REGION} ${AWS_ACCOUNT_ID} ${IMAGE_TAG}
+                        echo "✅ All images pushed"
+                    '''
+                }
+            }
+        }
+
+        // ── 13. Init Database ──────────────────────────────────
+        stage('Init Database') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    sh '''
+                        echo "=== Initializing Database ==="
+
+                        # انتظر الـ Lambda تكون active
+                        aws lambda wait function-active \
+                            --function-name aurabank-dev-db-init \
+                            --region ${AWS_REGION}
+
+                        aws lambda invoke \
+                            --function-name aurabank-dev-db-init \
+                            --region ${AWS_REGION} \
+                            /tmp/db-result.json
+
+                        cat /tmp/db-result.json
+
+                        STATUS=$(python3 -c "import json; d=json.load(open('/tmp/db-result.json')); print(d.get('statusCode',500))")
+                        if [ "$STATUS" != "200" ]; then
+                            echo "❌ DB init failed!"
+                            exit 1
+                        fi
+                        echo "✅ Database initialized"
+                    '''
+                }
+            }
+        }
+
+        // ── 14. Deploy ECS Services ────────────────────────────
+        stage('Deploy ECS Services') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    sh '''
+                        echo "=== Redeploying ECS Services ==="
+                        SERVICES="api-gateway auth-service accounts-service transactions-service notifications-service frontend-customers frontend-teller"
+                        for svc in $SERVICES; do
+                            aws ecs update-service \
+                                --cluster ${CLUSTER} \
+                                --service aurabank-dev-${svc} \
+                                --force-new-deployment \
+                                --region ${AWS_REGION} > /dev/null
+                            echo "  ↻ ${svc} redeployed"
+                        done
+                        echo "✅ All services redeployed"
+                    '''
+                }
+            }
+        }
+
+        // ── 15. Health Check ───────────────────────────────────
+        stage('Health Check') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
+                    sh '''
+                        echo "=== Waiting for services to be healthy ==="
+                        sleep 120
+
+                        SERVICES="api-gateway auth-service accounts-service transactions-service notifications-service frontend-customers frontend-teller"
+                        ALL_HEALTHY=true
+
+                        for svc in $SERVICES; do
+                            RUNNING=$(aws ecs describe-services \
+                                --cluster ${CLUSTER} \
+                                --services aurabank-dev-${svc} \
+                                --region ${AWS_REGION} \
+                                --query 'services[0].runningCount' \
+                                --output text)
+                            DESIRED=$(aws ecs describe-services \
+                                --cluster ${CLUSTER} \
+                                --services aurabank-dev-${svc} \
+                                --region ${AWS_REGION} \
+                                --query 'services[0].desiredCount' \
+                                --output text)
+
+                            if [ "$RUNNING" -ge "$DESIRED" ]; then
+                                echo "  ✅ ${svc}: ${RUNNING}/${DESIRED}"
+                            else
+                                echo "  ❌ ${svc}: ${RUNNING}/${DESIRED}"
+                                ALL_HEALTHY=false
+                            fi
+                        done
+
+                        if [ "$ALL_HEALTHY" = "false" ]; then
+                            echo "❌ Some services are not healthy!"
+                            exit 1
+                        fi
+
+                        echo "✅ All services healthy!"
+
+                        CUSTOMER_URL="https://app-dev.aurabank-eg.com"
+                        TELLER_URL="https://teller-dev.aurabank-eg.com"
+                        CUST_STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${CUSTOMER_URL}/health || echo "000")
+                        echo "Customer Portal status: ${CUST_STATUS}"
+
+                        echo "🚀 Deploy complete!"
+                        echo "   Customer: ${CUSTOMER_URL}"
+                        echo "   Teller:   ${TELLER_URL}"
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // احذف الـ tfvars والـ tfplan من الـ workspace عشان الأمان
+            sh 'rm -f /tmp/db-result.json ${TF_DIR}/tfplan ${TF_DIR}/terraform.tfvars || true'
+        }
+        success {
+            echo '🎉 Full Deploy completed successfully!'
+        }
+        failure {
+            echo '❌ Deploy failed! Check logs above.'
+        }
+    }
+}
