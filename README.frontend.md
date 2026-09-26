@@ -1,4 +1,4 @@
-﻿# 🎨 README — Frontend
+# 🎨 README — Frontend
 
 > توثيق كامل لطبقة الـ frontend في Aura Bank — هيكل الـ UI، تدفق البيانات، الصفحات، والقرارات التقنية.
 
@@ -151,13 +151,14 @@ setInterval(() => {
 ### Color Palette
 ```css
 :root {
-  --bg:         #0a0e1a;   /* خلفية داكنة */
-  --surface:    #111827;   /* cards */
-  --gold:       #c9a84c;   /* اللون الرئيسي للبنك */
-  --green:      #10b981;   /* عمليات ناجحة / إيداع */
-  --red:        #ef4444;   /* تحذيرات / سحب */
-  --text:       #f1f5f9;
-  --text-muted: #94a3b8;
+  --bg:            #080c0e;   /* خلفية داكنة فحمي Obsidian */
+  --surface:       #101820;   /* Cards & Panels */
+  --emerald:       #10b981;   /* اللون الرئيسي الفخم (Emerald Wealth) */
+  --emerald-light: #34d399;   /* تفاصيل وتمييز النصوص والأيقونات */
+  --green:         #10b981;   /* عمليات ناجحة / إيداع */
+  --red:           #f43f5e;   /* تحذيرات / سحب */
+  --text:          #f8fafc;   /* نصوص ساطعة واضحة */
+  --text-muted:    #8b9cb0;
 }
 ```
 
