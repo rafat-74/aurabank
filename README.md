@@ -17,6 +17,10 @@
 
 </div>
 
+<p align="center">
+  <img src="./architecture_poster.jpg" alt="Aura Bank Architecture Poster" width="100%">
+</p>
+
 ---
 
 ## 📌 Executive Overview
