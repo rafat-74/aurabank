@@ -1,252 +1,290 @@
 <div align="center">
 
-# 🏦 Aura Bank — البنك الرقمي المتكامل
+# 🏦 Aura Bank — Enterprise Cloud-Native Banking Platform
 
-<img src="https://img.shields.io/badge/Architecture-Microservices-0A0F1E?style=for-the-badge&logo=docker&logoColor=C9A84C"/>
+<img src="https://img.shields.io/badge/Architecture-Microservices-0A0F1E?style=for-the-badge&logo=docker&logoColor=10B981"/>
 <img src="https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white"/>
 <img src="https://img.shields.io/badge/Database-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white"/>
-<img src="https://img.shields.io/badge/Cloud-AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white"/>
-<img src="https://img.shields.io/badge/IaC-Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white"/>
-<img src="https://img.shields.io/badge/Auth-JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white"/>
-<img src="https://img.shields.io/badge/Frontend-HTML%2FCSS%2FJS-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"/>
-<img src="https://img.shields.io/badge/CI%2FCD-Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white"/>
+<img src="https://img.shields.io/badge/Cloud-AWS_ECS_Fargate-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white"/>
+<img src="https://img.shields.io/badge/IaC-Terraform_1.7+-7B42BC?style=for-the-badge&logo=terraform&logoColor=white"/>
+<img src="https://img.shields.io/badge/Security-JWT_%26_RBAC-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white"/>
+<img src="https://img.shields.io/badge/Frontend-Vanilla_SPA-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"/>
+<img src="https://img.shields.io/badge/CI%2FCD-Jenkins_Pipelines-D24939?style=for-the-badge&logo=jenkins&logoColor=white"/>
 
 <br/><br/>
 
-> **نظام بنكي رقمي متكامل مبني بمعمارية Microservices حديثة — يشمل بوابة API Gateway، خدمات مستقلة، قواعد بيانات معزولة (Database-per-Service)، لوحة تحكم للعملاء ولوحة عمليات للموظفين والخزينة (Teller)، جاهز للنشر المحلي بـ Docker وللسحابة على AWS ECS Fargate عبر Terraform و Jenkins.**
+> **A production-grade, cloud-native microservices banking platform engineered for high availability, transactional consistency, and enterprise security. Features an API Gateway, database-per-service isolation, an institutional Emerald Wealth customer portal, a branch teller terminal, and automated deployment to AWS ECS Fargate via Terraform & Jenkins.**
 
 </div>
 
 ---
 
-## ما هو Aura Bank؟
+## 📌 Executive Overview
 
-**Aura Bank** نظام بنكي رقمي متكامل يجسّد مفهوم **Microservices Architecture** بأفضل الممارسات البرمجية والتشغيلية (Production-Grade). كل خدمة تعمل في Container مستقل، تعتمد على Schema مخصصة ومستخدم معزول داخل PostgreSQL، وتتواصل الخدمات مع بعضها عبر شبكة داخلية آمنة.
+**Aura Bank** is a modern financial platform built from the ground up to demonstrate enterprise microservices patterns and resilient cloud engineering:
 
-يدعم المشروع بيئتين أساسيتين:
-1. **Local Development:** تشغيل جميع الخدمات والواجهات بأمر واحد عبر `docker compose up --build`.
-2. **Cloud Production (AWS):** بنية تحتية برمجية بالكامل (IaC) عبر Terraform تشمل VPC، ECS Fargate، ALB، RDS Multi-AZ، CloudFront، WAF، SQS، SES، و 3 Jenkins Pipelines للأتمتة الكاملة.
-
----
-
-## التقنيات المستخدمة
-
-| الطبقة | التقنيات |
-|--------|---------|
-| **Backend** | Python 3.12 · FastAPI · psycopg2 (Threaded Pool) · httpx · python-jose · bcrypt |
-| **Database** | PostgreSQL 15 — تصميم Database-per-Service مع 4 Schemas ومستخدمين معزولين |
-| **Frontend** | HTML5 · Modern CSS3 (Dark/Luxury theme) · Vanilla JavaScript (SPA) |
-| **Infrastructure (Local)** | Docker · Docker Compose · Nginx (Static Serving & Reverse Proxy) |
-| **Infrastructure (Cloud)** | AWS ECS Fargate · RDS · ALB · CloudFront · WAFv2 · Route53 |
-| **IaC** | Terraform 1.7+ — Remote State على S3 مع State Locking عبر DynamoDB |
-| **CI/CD** | Jenkins · GitHub Webhooks — 3 خطوط أنابيب (Deploy · CI/CD Delta · Destroy) |
-| **Notifications & Queue** | AWS SQS · AWS SNS (SMS) · AWS SES (Email) |
-| **Security & RBAC** | JWT HS256 · bcrypt · Rate Limiting · RBAC (Customer, Teller, Supervisor, Admin) · AWS WAF |
+- **Strict Service Isolation:** Fully independent microservices communicating strictly via internal REST APIs and asynchronous message queues.
+- **Database-per-Service Pattern:** Isolated schemas and dedicated database users within PostgreSQL to enforce domain boundaries and prevent cross-boundary data leakage.
+- **Financial Concurrency Safety:** Strict distributed locking and transactional atomicity using PostgreSQL `SELECT ... FOR UPDATE` row locks to guarantee zero double-spending and prevent race conditions.
+- **Dual Frontends:**
+  - **Customer Digital Banking Portal:** Sleek institutional *Emerald Wealth* design for account management, transfers, bill payments, currency exchange, savings goals, and loan requests.
+  - **Branch Teller & Operations Terminal:** High-throughput internal workstation for tellers, supervisors, and system administrators with live audit trails and cashier logs.
+- **Dual Deployment Paradigms:**
+  - **Local Development:** One-command orchestration via `docker compose up --build`.
+  - **AWS Cloud Production:** Full Infrastructure as Code (IaC) with Terraform across private VPC subnets, AWS ECS Fargate, Multi-AZ RDS, Application Load Balancers, CloudFront CDN, and AWS WAFv2.
 
 ---
 
-## معمارية النظام (System Architecture)
+## 🏗️ System Architecture
 
-### 1. البيئة المحلية (Local Docker Compose)
-
-```
-                        ┌────────────────────────────────────┐
-                        │        CLIENT BROWSER              │
-                        │  frontend-customers   frontend-teller│
-                        │       :8080                :8081    │
-                        └─────────────┬──────────────────────┘
-                                      │
-                        ┌─────────────▼──────────────────────┐
-                        │         API GATEWAY :8000           │
-                        │    JWT · Rate Limit · RBAC          │
-                        └──┬──────────┬──────────┬───────────┘
-                           │          │          │          │
-                      auth-svc  accounts-svc  txn-svc  notif-svc
-                       :8001      :8002        :8003     :8004
-                         │          │            │          │
-                      auth-db  accounts-db   txn-db   notif-db
-                     (schema)   (schema)    (schema)   (schema)
-```
-
-### 2. البيئة السحابية (AWS Production)
+### 1. Local Development Topology (Docker Compose)
 
 ```
-User / Employee
+                         ┌──────────────────────────────────────────────┐
+                         │               CLIENT BROWSER                 │
+                         │   frontend-customers    frontend-teller      │
+                         │        :8080                 :8081           │
+                         └──────────────┬───────────────────────────────┘
+                                        │ (HTTP /api/*)
+                         ┌──────────────▼───────────────────────────────┐
+                         │              API GATEWAY :8000               │
+                         │      JWT Validation · Rate Limiting · RBAC   │
+                         └──┬───────────┬──────────────┬─────────────┬──┘
+                            │           │              │             │
+                      auth-service  accounts-svc  txn-service  notif-service
+                         :8001        :8002          :8003         :8004
+                            │           │              │             │
+                         auth_db   accounts_db     txn_db       notif_db
+                        (schema)    (schema)      (schema)      (schema)
+                            └───────────┴──────┬───────┴─────────────┘
+                                               │
+                                       PostgreSQL 15 (Docker)
+```
+
+### 2. AWS Cloud Production Topology
+
+```
+User / Branch Teller
  │
  ▼
-Route53
+Route 53 (DNS)
  │
  ▼
-CloudFront (2 Distributions)
-├── app-dev.aurabank-eg.com   →  WAF (OWASP + Rate Limit)
-└── teller-dev.aurabank-eg.com →  WAF (IP Allowlist + OWASP)
+AWS CloudFront (CDN & Edge Caching)
+├── app.aurabank.eg    ──► AWS WAFv2 (OWASP Top 10 + Rate Limiting)
+└── teller.aurabank.eg ──► AWS WAFv2 (IP Allowlist + Strict Inspection)
  │
  ▼
-Application Load Balancer (HTTPS)
-├── /api/*    →  ECS: api-gateway        :8000
-├── /teller/* →  ECS: frontend-teller   :80
-└── /*        →  ECS: frontend-customers :80
+Application Load Balancer (Public Subnets, SSL Termination)
+├── /api/*    ──► Target Group: API Gateway (:8000)
+├── /teller/* ──► Target Group: Frontend Teller (:80)
+└── /*        ──► Target Group: Frontend Customers (:80)
  │
- ├── ECS Fargate (Private Subnets — AWS Service Discovery)
- │   ├── api-gateway           :8000  (JWT · Rate Limit · RBAC)
+ ├── AWS ECS Fargate (Private Subnets, awsvpc + AWS Cloud Map Service Discovery)
+ │   ├── api-gateway           :8000  (JWT · Rate Limiter · Proxy Engine)
  │   ├── auth-service          :8001
  │   ├── accounts-service      :8002
- │   ├── transactions-service  :8003 ──► AWS SQS
- │   └── notifications-service :8004 ◄── AWS SQS ──► SES (Email) · SNS (SMS)
+ │   ├── transactions-service  :8003 ──► AWS SQS Queue
+ │   └── notifications-service :8004 ◄── AWS SQS Queue ──► AWS SES (Email) / SNS (SMS)
  │
- └── RDS PostgreSQL (Private Subnets)
-     ├── schema: auth          (user: auth_user)
-     ├── schema: accounts      (user: accounts_user)
-     ├── schema: transactions  (user: transactions_user)
-     └── schema: notifications (user: notifications_user)
+ └── Amazon RDS PostgreSQL (Isolated Database Subnet, Multi-AZ)
+     ├── Schema: auth          (User: auth_user)
+     ├── Schema: accounts      (User: accounts_user)
+     ├── Schema: transactions  (User: transactions_user)
+     └── Schema: notifications (User: notifications_user)
 ```
 
 ---
 
-## الفيتشرز الرئيسية
+## 🛠️ Tech Stack Matrix
 
-### 📱 بوابة العملاء (Customer Portal)
-- تسجيل حساب جديد فورياً وفتح حساب بنكي تلقائي برقم مميز (`AURA-XXXXXXXX`).
-- لوحة تحكم بالرصيد اللحظي والعمليات الأخيرة مع مخططات تفاعلية.
-- تحويل أموال داخلي بين الحسابات مع فحص فوري للأرصدة وتجميد الحسابات.
-- دفع الفواتير (كهرباء، ماء، إنترنت، غاز) وتحديث الأرصدة تلقائياً.
-- صرف العملات الحية بأسعار صرف متعددة (EGP, USD, EUR, GBP, SAR, AED, KWD).
-- إدارة البطاقات البنكية الائتمانية والخصم المباشر (تجميد/تفعيل/تفاصيل).
-- خطط وأهداف الادخار (Savings Goals) ومتابعة التقدم.
-- تقديم طلبات القروض ومتابعة حالتها اللحظية.
-- محفظة تداول استثمارية للأسهم.
-- مركز إشعارات متكامل (In-App Notifications + Email عبر AWS SES).
-
-### 💼 بوابة الخزينة والعمليات (Teller & Ops Portal)
-- تسجيل دخول الموظفين حسب الصلاحيات: `teller`، `supervisor`، `admin`.
-- استعراض وبحث وتصفية جميع حسابات العملاء.
-- تنفيذ عمليات الإيداع، السحب، والتحويل المباشر من الشباك.
-- تجميد وفك تجميد الحسابات البنكية.
-- دورة مراجعة واعتماد/رفض طلبات القروض من قِبل المشرفين والمدراء مع الصرف المالي الآلي للرصيد فور الموافقة.
-- سجل عمليات الخزينة اليومي (`teller_log`) مع إحصاءات 7 أيام.
-- سجل الرقابة والمراجعة الأمني الشامل (`audit_log`).
-- لوحة إدارة الموظفين للمدراء (إنشاء موظف، تفعيل/تعطيل الحسابات).
-
-### 🔒 نظام الأمان والحماية
-- توثيق JWT مع نظام الصلاحيات المبني على الأدوار (RBAC).
-- تشفير كلمات المرور باستخدام خوارزمية `bcrypt`.
-- Rate Limiting على مسارات تسجيل الدخول لحماية النظام من Brute-Force Attacks.
-- عزل قواعد البيانات على مستوى الـ Schemas والمستخدمين وصلاحيات `GRANT`.
-- حماية ضد تعارض العمليات المالية المتزامنة (Race Conditions) باستخدام `SELECT ... FOR UPDATE` في المعاملات البنكية.
-- WAFv2 على AWS: قواعد OWASP Top 10 وقائمة بيضاء (IP Allowlist) لبوابة الموظفين.
+| Layer | Technologies & Standards |
+|---|---|
+| **Backend Framework** | Python 3.12 · FastAPI (ASGI) · Uvicorn · Pydantic v2 |
+| **Data Layer** | PostgreSQL 15 · psycopg2 Threaded Connection Pool · Connection Pooling |
+| **Authentication & RBAC** | JWT (HS256) · Passlib / bcrypt · Role-Based Access Control |
+| **Message Broker & Events** | AWS SQS · In-memory / background async queues |
+| **Frontend Applications** | HTML5 · Modern Responsive CSS3 (Glassmorphism & Emerald Wealth Theme) · Vanilla JavaScript SPA |
+| **Reverse Proxy & Web Server** | Nginx 1.27 Alpine · Security Headers · Dynamic Proxy Pass |
+| **Containerization** | Docker · Multi-stage Container Builds · Docker Compose v2 |
+| **Cloud Infrastructure (AWS)** | ECS Fargate · RDS PostgreSQL · ALB · CloudFront · WAFv2 · Route 53 · Secrets Manager |
+| **Infrastructure as Code (IaC)** | Terraform 1.7+ · S3 Remote State Backend · DynamoDB State Locking |
+| **CI/CD Automation** | Jenkins Pipelines (Declarative) · GitHub Webhook Integrations |
 
 ---
 
-## هيكل المشروع
+## 📦 Microservices Breakdown
 
-```
-AuraBank/
-├── docker-compose.yml                 # تشغيل النظام المحلي كاملاً
-├── infrastructure/nginx/              # إعدادات Nginx العكسي
-├── scripts/
-│   └── init-schemas.sql              # تهيئة الـ PostgreSQL Schemas والمستخدمين
-├── services/                          # الـ Microservices المستقلة
-│   ├── api-gateway/                   # بوابة الـ API والـ Routing والصلاحيات (:8000)
-│   ├── auth-service/                  # خدمة المصادقة والمستخدمين (:8001)
-│   ├── accounts-service/              # خدمة الحسابات والبطاقات والقروض (:8002)
-│   ├── transactions-service/          # خدمة العمليات والتحويلات وسجلات الخزينة (:8003)
-│   ├── notifications-service/         # خدمة الإشعارات و SQS Worker (:8004)
-│   ├── frontend-customers/            # واجهة بوابة العملاء (:8080)
-│   └── frontend-teller/               # واجهة بوابة الخزينة والعمليات (:8081)
-│
-├── Jenkinsfiles/                      # Jenkins CI/CD Automation
-│   ├── Jenkinsfile.deploy             # بناء ونشر كامل على AWS من الصفر
-│   ├── Jenkinsfile.cicd               # Webhook — إعادة بناء الـ Services المعدلة فقط
-│   └── Jenkinsfile.destroy            # حذف موارد الـ Infrastructure لتوفير التكاليف
-│
-└── terraform/                         # AWS Infrastructure as Code
-    ├── modules/                       # وحدات قابلة لإعادة الاستخدام (VPC, ALB, ECS, RDS, WAF, etc.)
-    ├── envs/dev/                      # بيئة التطوير السحابية (Fargate Spot)
-    ├── envs/prod/                     # بيئة الإنتاج السحابية (High Availability)
-    └── scripts/                       # سكريبتات الدعم والأتمتة
-```
+### 1. `api-gateway` (:8000)
+- Single public entry point for all frontend client traffic.
+- Validates cryptographic JWT tokens before routing downstream.
+- Built-in in-memory rate limiting (60 requests/minute per IP/User, 10 req/min for auth).
+- Role-Based Access Control enforcement (`customer`, `teller`, `supervisor`, `admin`).
+- Request tracing with unique `X-Request-ID` and latency logging.
+
+### 2. `auth-service` (:8001)
+- Customer registration and instant account creation dispatch.
+- Customer login with secure password hashing (`bcrypt`, cost factor 12).
+- Employee authentication supporting multi-branch teller, supervisor, and administrator roles.
+- Dedicated schema: `auth.users`, `auth.employees`, `auth.audit_log`.
+
+### 3. `accounts-service` (:8002)
+- Customer bank accounts management and unique account number generator (`AURA-XXXXXXXX`).
+- Digital and physical card lifecycle management (Virtual Visa, debit/credit issuance, instant freeze/unfreeze).
+- Savings goals tracker with percentage progress calculation.
+- Personal loan application submission, review, and status tracking.
+
+### 4. `transactions-service` (:8003)
+- Executes peer-to-peer internal transfers between Aura Bank accounts with ACID compliance.
+- Row-level database locking (`SELECT ... FOR UPDATE`) prevents concurrent balance exploitation.
+- Branch teller operations: cash deposits, cash withdrawals, and bill payments.
+- Real-time foreign exchange engine (EGP, USD, EUR, GBP, SAR, AED, KWD).
+- Cashier transactions audit ledger (`teller_log`).
+
+### 5. `notifications-service` (:8004)
+- Centralized event consumer processing transactional notification alerts.
+- In-app notification inbox with read/unread status.
+- Integration-ready for AWS SES (Email dispatch) and AWS SNS (SMS alerts).
+
+### 6. `frontend-customers` (:8080)
+- Customer-facing Single Page Application (SPA) served via Nginx.
+- Emerald Wealth institutional UI aesthetic: subtle dark green gradients, vector SVGs, and real-time interactive widgets.
+- Complete financial services: accounts, transfers, statements, cards, exchange, and loans.
+
+### 7. `frontend-teller` (:8081)
+- High-efficiency branch workstation and administrative portal.
+- Role-scoped interfaces: Teller window, loan approval pipeline for supervisors, and employee management + security audit log for administrators.
 
 ---
 
-## تشغيل المشروع محلياً — Quick Start
+## 🔒 Security & Resilience Architecture
 
-### المتطلبات
-- **Docker** v20.10+
-- **Docker Compose** v2.0+
+1. **Zero-Trust Network Model:** Backend microservices and the database operate inside private subnets without public IPs. They can only be reached through the API Gateway.
+2. **Database-per-Service:** Schemas (`auth`, `accounts`, `transactions`, `notifications`) have distinct credentials; no service has database credentials or permissions outside its domain.
+3. **Transaction Atomicity & Race Prevention:** Every financial movement executes inside isolated PostgreSQL transactions with explicit row-level locks:
+   ```sql
+   SELECT balance FROM accounts.accounts WHERE id = $1 FOR UPDATE;
+   ```
+4. **AWS WAFv2 Shielding:**
+   - **Customer Portal:** Protected by AWS Managed Rules (OWASP Top 10, Common Vulnerabilities, Rate Limiting).
+   - **Teller Portal:** Protected by IP Allowlisting to restrict branch terminal access exclusively to trusted corporate CIDR ranges.
 
-### خطوات التشغيل
+---
+
+## 🚀 Quick Start — Local Development
+
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (v20.10+)
+- [Docker Compose](https://docs.docker.com/compose/) (v2.0+)
+
+### Launching the System
 
 ```bash
-# 1. الدخول لمجلد المشروع
-cd AuraBank
+# 1. Clone the repository
+git clone https://github.com/rafat-74/aurabank.git
+cd aurabank
 
-# 2. تشغيل جميع الخدمات والواجهات بضغطة واحدة
+# 2. Start all microservices, databases, and frontends
 docker compose up --build
 ```
 
-### الروابط المحلية
+### Access URLs
 
-| الخدمة | الرابط | الوصف |
-|--------|--------|-------|
-| **بوابة العملاء (Customer Portal)** | [http://localhost:8080](http://localhost:8080) | الواجهة الرئيسية للعملاء |
-| **بوابة الخزينة (Teller Portal)** | [http://localhost:8081](http://localhost:8081) | واجهة الموظفين والعمليات |
-| **بوابة الـ API (API Gateway)** | [http://localhost:8000](http://localhost:8000) | نقطة الوصول المركزية |
-| **فحص الجاهزية (Health Check)** | [http://localhost:8000/ready](http://localhost:8000/ready) | مراقبة صحة الخدمات |
-
-### بيانات الدخول التجريبية (Demo Credentials)
-
-**حسابات العملاء:**
-
-| الاسم | البريد الإلكتروني | كلمة المرور | رقم الحساب | نوع الحساب |
-|-------|------------------|------------|------------|-----------|
-| أحمد محمد | `demo@aurabank.eg` | `demo123` | `AURA-DEMO0001` | Premium (125,750.50 EGP) |
-| نور علي | `nour.ali@gmail.com` | `nour123` | `AURA-ABC12345` | Standard (22,000.00 EGP) |
-| تامر حسن | `tamer.h@outlook.com` | `tamer456` | `AURA-BIZ77890` | Business (480,000.00 EGP) |
-
-**حسابات الموظفين:**
-
-| اسم المستخدم | كلمة المرور | الدور (Role) | الفرع |
-|------------|------------|--------------|-------|
-| `Rafat Ashraf K` | `teller123` | Teller (صراف) | التجمع الخامس |
-| `s.ahmed` | `teller456` | Supervisor (مشرف) | المعادي |
-| `k.abdallah` | `admin789` | Admin (مدير نظام) | الإدارة العامة |
+| Application / Service | URL | Description |
+|---|---|---|
+| **Customer Banking Portal** | [http://localhost:8080](http://localhost:8080) | Retail & private wealth client portal |
+| **Teller & Branch Portal** | [http://localhost:8081](http://localhost:8081) | Internal employee & admin terminal |
+| **API Gateway** | [http://localhost:8000](http://localhost:8000) | Central REST Gateway |
+| **Health Check Endpoint** | [http://localhost:8000/health](http://localhost:8000/health) | Live service cluster status |
 
 ---
 
-## النشر السحابي — AWS Production
+## 🔑 Demo Credentials
 
-يتم نشر النظام بالكامل تلقائياً بواسطة **Jenkins** مع **Terraform**:
+### Customer Accounts
+*You can also create a brand new account directly from the registration page.*
+
+| Full Name | Email Address | Password | Account Number | Initial Balance |
+|---|---|---|---|---|
+| **Rafat Ashraf** | `demo@aurabank.eg` | `demo123` | `AURA-DEMO0001` | 125,750.50 EGP |
+| **Nour Ali** | `nour.ali@gmail.com` | `nour123` | `AURA-ABC12345` | 22,000.00 EGP |
+| **Tamer Hassan** | `tamer.h@outlook.com` | `tamer456` | `AURA-BIZ77890` | 480,000.00 EGP |
+
+### Employee & Administrative Accounts
+*Quick-fill buttons are available on the Teller login page for one-click access.*
+
+| Username | Password | Role | Assigned Branch | Access Level |
+|---|---|---|---|---|
+| `Rafat Ashraf K` | `teller123` | **Teller** | Cairo Branch | Cash deposits, withdrawals, transfers, account lookup |
+| `s.ahmed` | `teller456` | **Supervisor** | Giza Branch | Loan approval / rejection, high-value transfer oversight |
+| `k.abdallah` | `admin789` | **Admin** | Central Operations | Employee management, full audit logs, branch monitoring |
+
+---
+
+## ☁️ Cloud Deployment — AWS Infrastructure
+
+The repository includes complete production Terraform modules under `terraform/` targeting AWS:
 
 ```bash
-# 1. Bootstrap Remote State (S3 Bucket + DynamoDB Table)
+# 1. Initialize remote S3 backend state & DynamoDB locking
 ./terraform/scripts/bootstrap_state.sh dev us-east-1
 
-# 2. تطبيق البنية التحتية
+# 2. Plan and provision cloud infrastructure
 cd terraform/envs/dev
-terraform init && terraform apply -var-file=terraform.tfvars
+terraform init
+terraform apply -var-file=terraform.tfvars
 
-# 3. بناء ورفع حاويات الـ Docker إلى AWS ECR
-./terraform/scripts/push_images.sh dev us-east-1 YOUR_ACCOUNT_ID v1.0.0
+# 3. Build & push container images to AWS ECR
+./terraform/scripts/push_images.sh dev us-east-1 <AWS_ACCOUNT_ID> v1.0.0
 
-# 4. تشغيل Lambda لتهيئة جداول قواعد البيانات على RDS
+# 4. Initialize database schemas on RDS via Lambda hook
 aws lambda invoke --function-name aurabank-dev-db-init --region us-east-1 /tmp/out.json
 ```
 
 ---
 
-## وثائق المشروع التفصيلية
+## 📁 Repository Structure
 
-- 📘 [توثيق معمارية الـ Backend والـ Endpoints بالتفصيل](./README.backend.md)
-- 🎨 [توثيق معمارية واجهات المستخدم والـ Frontend](./README.frontend.md)
-- ⚙️ [توثيق الـ DevOps والـ CI/CD والـ Pipelines](./README_devops.md)
-- ☁️ [توثيق موارد AWS السحابية بالتفصيل](./INFRASTRUCTURE-on-AWS.md)
-- 🏗️ [دليل الـ Terraform Modules والنشر](./terraform/README.md)
+```
+AuraBank/
+├── docker-compose.yml              # Local multi-service orchestration
+├── .gitignore                      # Git exclusion rules
+├── README.md                       # Main architecture & overview document
+├── README.backend.md               # In-depth microservices backend documentation
+├── README.frontend.md              # Frontend architecture & UI theme details
+├── README_devops.md                # DevOps, Docker, and CI/CD pipelines guide
+├── INFRASTRUCTURE-on-AWS.md        # Detailed AWS architectural reference
+│
+├── services/
+│   ├── api-gateway/                # FastAPI Gateway (:8000)
+│   ├── auth-service/               # Authentication & User Management (:8001)
+│   ├── accounts-service/           # Account balances, cards, loans (:8002)
+│   ├── transactions-service/       # Transfers, cashier ledger (:8003)
+│   ├── notifications-service/      # Notifications worker (:8004)
+│   ├── frontend-customers/         # Customer SPA on Nginx (:8080)
+│   └── frontend-teller/            # Teller & Admin SPA on Nginx (:8081)
+│
+├── scripts/
+│   └── init-schemas.sql           # Database schema & role initialization
+│
+├── Jenkinsfiles/                   # Automated CI/CD pipelines
+│   ├── Jenkinsfile.deploy          # Full AWS deployment from scratch
+│   ├── Jenkinsfile.cicd            # Delta CI/CD triggered on code push
+│   └── Jenkinsfile.destroy         # Cost-saving infrastructure teardown
+│
+└── terraform/                      # Infrastructure as Code (IaC)
+    ├── modules/                    # Reusable modules (VPC, ALB, ECS, RDS, etc.)
+    ├── envs/dev/                   # Dev environment config (Fargate Spot)
+    ├── envs/prod/                  # Production config (Multi-AZ, HA)
+    └── scripts/                    # Deployment & migration automation
+```
 
 ---
 
+## 📜 License
+
+This project is licensed under the MIT License — feel free to explore, learn from it, or use it for your portfolio.
+
 <div align="center">
-
-**Aura Bank — Enterprise Cloud Banking Microservices System**  
-*Built with FastAPI · PostgreSQL · Docker · AWS ECS Fargate · Terraform · Jenkins*
-
+  <sub>Developed by <b>Rafat Ashraf</b> · Cloud & DevOps Engineer</sub>
 </div>
