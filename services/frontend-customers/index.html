@@ -1585,10 +1585,10 @@
         background: var(--card-bg);
         border: 1px solid var(--border);
         border-radius: var(--radius);
-        padding: 2rem 1.5rem;
+        padding: 2.2rem 1.6rem;
         text-align: center;
         cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         overflow: hidden;
       }
@@ -1602,35 +1602,51 @@
         background: linear-gradient(
           180deg,
           transparent,
-          rgba(16, 185, 129, 0.05)
+          rgba(16, 185, 129, 0.04)
         );
-        transition: bottom 0.4s;
+        transition: bottom 0.3s;
       }
       .service-card:hover {
-        transform: translateY(-10px);
+        transform: translateY(-5px);
         border-color: rgba(16, 185, 129, 0.4);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
       }
       .service-card:hover::after {
         bottom: 0;
       }
-      .service-card:hover .service-icon {
-        transform: scale(1.3) rotate(10deg);
+      .service-card:hover .service-icon-box {
+        background: rgba(16, 185, 129, 0.16);
+        border-color: rgba(16, 185, 129, 0.5);
+        color: #34d399;
+        transform: translateY(-2px);
       }
-      .service-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        display: block;
-        transition: transform 0.4s;
+      .service-icon-box {
+        width: 52px;
+        height: 52px;
+        margin: 0 auto 1.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: rgba(16, 185, 129, 0.08);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        color: var(--emerald-light);
+        transition: all 0.3s ease;
+      }
+      .service-icon-box svg {
+        width: 26px;
+        height: 26px;
       }
       .service-card h3 {
-        font-size: 1rem;
+        font-size: 1.05rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
+        color: var(--text);
       }
       .service-card p {
         font-size: 0.85rem;
         color: var(--text-muted);
+        line-height: 1.6;
       }
       .testimonials {
         background: rgba(255, 255, 255, 0.02);
@@ -2588,34 +2604,81 @@
         </div>
         <div class="services-grid">
           <div class="service-card" onclick="showPage('register')">
-            <span class="service-icon">💰</span>
-            <h3>حسابات التوفير</h3>
-            <p>عائد سنوي يصل إلى 15%</p>
+            <div class="service-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+                <circle cx="12" cy="12" r="3.2"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+                <circle cx="12" cy="12" r="1"></circle>
+              </svg>
+            </div>
+            <h3>حسابات التوفير والودائع</h3>
+            <p>عائد استثماري تنافسي يصل إلى 15% سنوياً</p>
           </div>
           <div class="service-card" onclick="showPage('register')">
-            <span class="service-icon">🏠</span>
-            <h3>قروض العقارات</h3>
-            <p>تمويل حلمك بأفضل الشروط</p>
+            <div class="service-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21h18"></path>
+                <path d="M5 21V7l8-4v18"></path>
+                <path d="M19 21V11l-6-4"></path>
+                <line x1="9" y1="9" x2="9" y2="9.01"></line>
+                <line x1="9" y1="13" x2="9" y2="13.01"></line>
+                <line x1="9" y1="17" x2="9" y2="17.01"></line>
+              </svg>
+            </div>
+            <h3>التمويل العقاري</h3>
+            <p>حلول تمويل عقاري للأفراد والمؤسسات بشروط مرنة</p>
           </div>
           <div class="service-card" onclick="showPage('register')">
-            <span class="service-icon">🚗</span>
-            <h3>قروض السيارات</h3>
-            <p>امتلك سيارتك بأقساط مريحة</p>
+            <div class="service-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 16l1.5-6h11l1.5 6H5z"></path>
+                <circle cx="7.5" cy="17.5" r="2.5"></circle>
+                <circle cx="16.5" cy="17.5" r="2.5"></circle>
+                <path d="M5 16H3a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1h2"></path>
+                <path d="M19 16h2a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-2"></path>
+                <line x1="12" y1="10" x2="12" y2="13"></line>
+              </svg>
+            </div>
+            <h3>تمويل المركبات</h3>
+            <p>برامج تمويل مرنة لأسطول الشركات والسيارات الخاصة</p>
           </div>
           <div class="service-card" onclick="showPage('register')">
-            <span class="service-icon">📊</span>
+            <div class="service-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+                <line x1="2" y1="20" x2="22" y2="20"></line>
+                <polyline points="4 10 10 4 14 8 20 2"></polyline>
+              </svg>
+            </div>
             <h3>صناديق الاستثمار</h3>
-            <p>نمّ ثروتك مع خبرائنا</p>
+            <p>إدارة ثروات احترافية تحت إشراف نخبة من الخبراء</p>
           </div>
           <div class="service-card" onclick="showPage('register')">
-            <span class="service-icon">🔄</span>
-            <h3>التحويلات الدولية</h3>
-            <p>لأكثر من 180 دولة حول العالم</p>
+            <div class="service-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+            </div>
+            <h3>التحويلات الدولية (SWIFT)</h3>
+            <p>تحويلات مالية فورية لأكثر من 180 دولة برسوم شفافة</p>
           </div>
           <div class="service-card" onclick="showPage('register')">
-            <span class="service-icon">💳</span>
-            <h3>البطاقات البريميوم</h3>
-            <p>مزايا حصرية وكاش باك</p>
+            <div class="service-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2.5"></rect>
+                <line x1="2" y1="10" x2="22" y2="10"></line>
+                <line x1="6" y1="15" x2="10" y2="15"></line>
+                <line x1="13" y1="15" x2="15" y2="15"></line>
+              </svg>
+            </div>
+            <h3>البطاقات المؤسسية والخاصة</h3>
+            <p>بطاقات بريميوم بحدود ائتمانية موسعة ومزايا حصرية</p>
           </div>
         </div>
       </div>
@@ -2632,17 +2695,26 @@
                 <div
                   class="logo-icon"
                   style="
-                    width: 36px;
-                    height: 36px;
-                    font-size: 18px;
-                    border-radius: 8px;
+                    width: 38px;
+                    height: 38px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: #0d1e30;
+                    border: 1px solid #1a3f68;
+                    border-radius: 9px;
                   "
                 >
-                  N
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                  </svg>
                 </div>
-                <span class="logo-text" style="font-size: 1.2rem"
-                  >Aura Bank</span
-                >
+                <div style="display:flex; flex-direction:column; line-height:1.15; margin-right:4px;">
+                  <span class="logo-text" style="font-size: 1.15rem">AURA BANK</span>
+                  <span style="font-size:0.58rem; letter-spacing:1.5px; color:var(--emerald-light); font-weight:700;">PRIVATE WEALTH</span>
+                </div>
               </div>
               <p>بنكك الرقمي الأول - نحو مستقبل مالي أفضل لكل عميل.</p>
               <p style="margin-top: 0.5rem">
@@ -2994,14 +3066,14 @@
             style="padding: 10px 22px; font-size: 0.9rem"
             onclick="openFreezeCardModal()"
           >
-            ❄️ تجميد البطاقة
+            تجميد البطاقة مؤقتاً
           </button>
           <button
             class="btn-outline"
             style="padding: 10px 22px; font-size: 0.9rem"
             onclick="openCardLimitModal()"
           >
-            💲 تعديل الحد
+            تعديل الحد الائتماني
           </button>
         </div>
         <div class="card-section">
@@ -3151,7 +3223,7 @@
     <!-- INVESTMENTS PAGE -->
     <div class="page" id="page-invest">
       <div class="invest-page">
-        <div class="page-title">📈 الاستثمارات</div>
+        <div class="page-title">المحفظة الاستثمارية</div>
         <div class="portfolio-chart card-section">
           <div class="card-section-title">أداء المحفظة - آخر 12 شهر</div>
           <div class="chart-area" id="portfolioChart"></div>
@@ -3190,7 +3262,7 @@
     <!-- EXCHANGE PAGE -->
     <div class="page" id="page-exchange">
       <div class="exchange-page">
-        <div class="page-title">💱 صرف العملات</div>
+        <div class="page-title">أسعار وصرف العملات</div>
         <div class="exchange-card">
           <div
             style="
@@ -3263,7 +3335,7 @@
     <!-- ACCOUNT PAGE -->
     <div class="page" id="page-account">
       <div class="account-page">
-        <div class="page-title">👤 حسابي</div>
+        <div class="page-title">الملف المصرفي</div>
         <div class="profile-header">
           <div
             class="profile-avatar"
@@ -3289,7 +3361,7 @@
     <!-- SETTINGS PAGE -->
     <div class="page" id="page-settings">
       <div class="settings-page">
-        <div class="page-title">⚙️ الإعدادات</div>
+        <div class="page-title">الإعدادات والأمان</div>
         <div class="settings-section">
           <div class="settings-section-title">الأمان والخصوصية</div>
           <div
@@ -3299,9 +3371,9 @@
             <div class="settings-left">
               <div
                 class="settings-icon"
-                style="background: rgba(0, 230, 118, 0.1)"
+                style="background: rgba(16, 185, 129, 0.1); color: var(--emerald-light);"
               >
-                🔐
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
               </div>
               <div>
                 <div class="settings-item-title">التحقق بخطوتين</div>
@@ -3328,9 +3400,9 @@
             <div class="settings-left">
               <div
                 class="settings-icon"
-                style="background: rgba(16, 185, 129, 0.1)"
+                style="background: rgba(16, 185, 129, 0.1); color: var(--emerald-light);"
               >
-                🔑
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-1.5 1.5L16 7l-1.5-1.5L13 7l-2-2 1.5-1.5L11 2 9 4 4.5 8.5a5 5 0 1 0 7 7L22 5v-3z"></path></svg>
               </div>
               <div>
                 <div class="settings-item-title">تغيير كلمة المرور</div>
@@ -3343,9 +3415,9 @@
             <div class="settings-left">
               <div
                 class="settings-icon"
-                style="background: rgba(0, 212, 255, 0.1)"
+                style="background: rgba(0, 212, 255, 0.1); color: #38bdf8;"
               >
-                👆
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12v.01"></path><path d="M19 12a7 7 0 0 0-14 0"></path><path d="M16 12a4 4 0 0 0-8 0"></path><path d="M12 2a10 10 0 0 0-10 10c0 4.14 2.5 7.69 6.07 9.21"></path><path d="M21.93 13.5A10 10 0 0 0 22 12"></path></svg>
               </div>
               <div>
                 <div class="settings-item-title">البصمة / Face ID</div>
@@ -3374,9 +3446,9 @@
             <div class="settings-left">
               <div
                 class="settings-icon"
-                style="background: rgba(123, 97, 255, 0.1)"
+                style="background: rgba(123, 97, 255, 0.1); color: #a78bfa;"
               >
-                🔔
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
               </div>
               <div>
                 <div class="settings-item-title">إشعارات المعاملات</div>
@@ -3391,9 +3463,9 @@
             <div class="settings-left">
               <div
                 class="settings-icon"
-                style="background: rgba(16, 185, 129, 0.1)"
+                style="background: rgba(16, 185, 129, 0.1); color: var(--emerald-light);"
               >
-                📧
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
               </div>
               <div>
                 <div class="settings-item-title">التنبيهات البريدية</div>
@@ -3414,9 +3486,9 @@
             <div class="settings-left">
               <div
                 class="settings-icon"
-                style="background: rgba(0, 212, 255, 0.1)"
+                style="background: rgba(0, 212, 255, 0.1); color: #38bdf8;"
               >
-                🌐
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
               </div>
               <div>
                 <div class="settings-item-title">اللغة</div>
@@ -3432,9 +3504,9 @@
             <div class="settings-left">
               <div
                 class="settings-icon"
-                style="background: rgba(0, 230, 118, 0.1)"
+                style="background: rgba(16, 185, 129, 0.1); color: var(--emerald-light);"
               >
-                💰
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M14.8 9A2 2 0 0 0 13 8h-2a2 2 0 0 0 0 4h2a2 2 0 0 1 0 4h-2a2 2 0 0 1-1.8-1"></path><line x1="12" y1="6" x2="12" y2="8"></line><line x1="12" y1="16" x2="12" y2="18"></line></svg>
               </div>
               <div>
                 <div class="settings-item-title">العملة الافتراضية</div>
@@ -3455,9 +3527,9 @@
             <div class="settings-left">
               <div
                 class="settings-icon"
-                style="background: rgba(16, 185, 129, 0.1)"
+                style="background: rgba(16, 185, 129, 0.1); color: var(--emerald-light);"
               >
-                📤
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               </div>
               <div>
                 <div class="settings-item-title">تصدير بياناتي</div>
@@ -3470,9 +3542,9 @@
             <div class="settings-left">
               <div
                 class="settings-icon"
-                style="background: rgba(255, 82, 82, 0.1)"
+                style="background: rgba(255, 82, 82, 0.1); color: #f87171;"
               >
-                🗑️
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
               </div>
               <div>
                 <div class="settings-item-title" style="color: var(--red)">
@@ -3498,13 +3570,13 @@
             margin-bottom: 2rem;
           "
         >
-          <div class="page-title" style="margin: 0">📄 كشف الحساب</div>
+          <div class="page-title" style="margin: 0">كشف الحساب المصرفي</div>
           <button
             class="btn-outline"
             style="padding: 8px 18px; font-size: 0.85rem"
             onclick="exportStatement()"
           >
-            ⬇️ تصدير PDF
+            تصدير كشف الحساب (PDF)
           </button>
         </div>
         <div class="card-section">
@@ -3535,7 +3607,7 @@
             margin-bottom: 2rem;
           "
         >
-          <div class="page-title" style="margin: 0">🔔 الإشعارات</div>
+          <div class="page-title" style="margin: 0">مركز التنبيهات والإشعارات</div>
           <button
             class="btn-outline"
             style="padding: 8px 18px; font-size: 0.85rem"
@@ -3551,7 +3623,7 @@
     <!-- HELP PAGE -->
     <div class="page" id="page-help">
       <div class="help-page">
-        <div class="page-title">❓ المساعدة والدعم</div>
+        <div class="page-title">المساعدة والدعم المصرفي</div>
         <div class="card-section" style="margin-bottom: 2rem">
           <div
             style="
@@ -3561,21 +3633,27 @@
             "
           >
             <div class="action-btn" onclick="openSupportChat()">
-              <div class="action-icon">💬</div>
+              <div class="action-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              </div>
               <div class="action-label">تحدث معنا</div>
             </div>
             <div
               class="action-btn"
               onclick="showToast('سيتم الاتصال بك قريباً', 'info')"
             >
-              <div class="action-icon">📞</div>
+              <div class="action-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              </div>
               <div class="action-label">اتصل بنا</div>
             </div>
             <div
               class="action-btn"
               onclick="showToast('تم إرسال بريد إلكتروني', 'success')"
             >
-              <div class="action-icon">📧</div>
+              <div class="action-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              </div>
               <div class="action-label">راسلنا</div>
             </div>
           </div>
@@ -3596,7 +3674,7 @@
     <div class="modal-overlay" id="transferModal">
       <div class="modal-box">
         <div class="modal-title">
-          📤 تحويل أموال
+          تحويل مصرفي
           <button class="modal-close" onclick="closeModal('transferModal')">
             ✕
           </button>
@@ -3641,7 +3719,7 @@
     <div class="modal-overlay" id="receiveModal">
       <div class="modal-box">
         <div class="modal-title">
-          📥 استقبال أموال
+          استلام أموال
           <button class="modal-close" onclick="closeModal('receiveModal')">
             ✕
           </button>
@@ -3654,7 +3732,7 @@
               margin-bottom: 0.5rem;
             "
           >
-            رقم حسابك
+            رقم حسابك المصرفي
           </div>
           <div
             id="receiveAccNum"
@@ -3697,7 +3775,7 @@
             style="width: 100%; padding: 12px"
             onclick="copyAccountNum()"
           >
-            📋 نسخ رقم الحساب
+            نسخ رقم الحساب المصرفي
           </button>
         </div>
       </div>
@@ -3707,7 +3785,7 @@
     <div class="modal-overlay" id="payModal">
       <div class="modal-box">
         <div class="modal-title">
-          💳 دفع فاتورة
+          سداد المدفوعات والفواتير
           <button class="modal-close" onclick="closeModal('payModal')">
             ✕
           </button>
@@ -3749,7 +3827,7 @@
     <div class="modal-overlay" id="newGoalModal">
       <div class="modal-box">
         <div class="modal-title">
-          🎯 هدف ادخار جديد
+          إضافة خطة ادخار
           <button class="modal-close" onclick="closeModal('newGoalModal')">
             ✕
           </button>
@@ -3802,7 +3880,7 @@
     <div class="modal-overlay" id="deleteGoalModal">
       <div class="modal-box">
         <div class="modal-title">
-          🗑️ تأكيد الحذف
+          تأكيد حذف الهدف
           <button class="modal-close" onclick="closeModal('deleteGoalModal')">
             ✕
           </button>
@@ -3828,7 +3906,7 @@
             style="background: #dc3545; flex: 1"
             onclick="confirmDeleteGoal()"
           >
-            🗑️ حذف
+            حذف الهدف
           </button>
 
           <button
@@ -3846,7 +3924,7 @@
     <div class="modal-overlay" id="loanModal">
       <div class="modal-box">
         <div class="modal-title">
-          🏦 طلب قرض
+          طلب تمويل بنكي
           <button class="modal-close" onclick="closeModal('loanModal')">
             ✕
           </button>
@@ -3899,7 +3977,7 @@
     <div class="modal-overlay" id="buyStockModal">
       <div class="modal-box">
         <div class="modal-title">
-          📈 شراء سهم
+          شراء أصول استثمارية
           <button class="modal-close" onclick="closeModal('buyStockModal')">
             ✕
           </button>
@@ -3950,7 +4028,7 @@
     <div class="modal-overlay" id="changePinModal">
       <div class="modal-box">
         <div class="modal-title">
-          🔑 تغيير كلمة المرور
+          تغيير كلمة المرور
           <button class="modal-close" onclick="closeModal('changePinModal')">
             ✕
           </button>
@@ -3992,7 +4070,7 @@
     <div class="modal-overlay" id="forgotModal">
       <div class="modal-box">
         <div class="modal-title">
-          🔓 استعادة كلمة المرور
+          استعادة كلمة المرور
           <button class="modal-close" onclick="closeModal('forgotModal')">
             ✕
           </button>
@@ -4025,7 +4103,7 @@
     <div class="modal-overlay" id="deleteAccountModal">
       <div class="modal-box">
         <div class="modal-title">
-          ⚠️ حذف الحساب
+          حذف الحساب المصرفي
           <button
             class="modal-close"
             onclick="closeModal('deleteAccountModal')"
@@ -4055,7 +4133,7 @@
             style="background: var(--red); flex: 1"
             onclick="deleteAccount()"
           >
-            🗑️ حذف الحساب
+            تأكيد حذف الحساب
           </button>
 
           <button
@@ -4073,7 +4151,7 @@
     <div class="modal-overlay" id="newCardModal">
       <div class="modal-box">
         <div class="modal-title">
-          💳 بطاقة جديدة
+          طلب إصدار بطاقة جديدة
           <button class="modal-close" onclick="closeModal('newCardModal')">
             ✕
           </button>
@@ -4110,24 +4188,27 @@
                 style="
                   width: 36px;
                   height: 36px;
-                  background: rgba(0, 0, 0, 0.2);
+                  background: rgba(16, 185, 129, 0.15);
+                  border: 1px solid rgba(16, 185, 129, 0.3);
                   border-radius: 50%;
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  font-size: 1.1rem;
+                  color: var(--emerald-light);
                 "
               >
-                🤖
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
               </div>
               <div class="chat-header-txt">
-                <h4>Aura Support</h4>
+                <h4>Aura Wealth Support</h4>
                 <p>متصل الآن ✓</p>
               </div>
             </div>
             <div class="chat-messages" id="chatMessages">
               <div class="chat-msg bot">
-                أهلاً! أنا مساعد Aura Bank الذكي. كيف يمكنني مساعدتك؟ 😊
+                أهلاً بك في Aura Bank. كيف يمكن لمستشارك المالي مساعدتك اليوم؟
               </div>
             </div>
           </div>
@@ -4142,7 +4223,11 @@
           </div>
         </div>
       </div>
-      <div class="chat-bubble" onclick="toggleChat()">💬</div>
+      <div class="chat-bubble" onclick="toggleChat()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#040707" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+      </div>
     </div>
 
     <script>
@@ -4552,11 +4637,11 @@
             await new Promise((r) => setTimeout(r, 800));
           }
           hideSpinner();
-          showToast("🎉 تم إنشاء حسابك بنجاح!", "success");
+          showToast("تم إنشاء حسابك المصرفي بنجاح", "success");
           loginSuccess(user);
         } catch (e) {
           hideSpinner();
-          showError(err, "❌ " + (e.message || "خطأ"));
+          showError(err, e.message || "حدث خطأ غير متوقع");
         }
       }
 
@@ -4579,7 +4664,7 @@
         document.getElementById("loginError").style.display = "none";
         document.getElementById("loginEmail").value = "";
         document.getElementById("loginPass").value = "";
-        showToast(`مرحباً ${user.firstName}! 👋`, "success");
+        showToast(`مرحباً بك ${user.firstName}`, "success");
         initTicker();
         showPage("dashboard");
       }
@@ -4644,8 +4729,8 @@
               (t) => `
       <div class="transaction-item">
         <div class="trans-left">
-          <div class="trans-icon" style="background:${t.type === "credit" ? "rgba(0,230,118,0.1)" : "rgba(255,82,82,0.1)"}">
-            ${t.type === "credit" ? "💚" : "💸"}
+          <div class="trans-icon" style="background:${t.type === "credit" ? "rgba(16,185,129,0.12)" : "rgba(244,63,94,0.12)"}; color:${t.type === "credit" ? "var(--emerald-light)" : "#f43f5e"}; display:flex; align-items:center; justify-content:center;">
+            ${t.type === "credit" ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="7" x2="17" y2="17"></line><polyline points="17 7 17 17 7 17"></polyline></svg>' : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>'}
           </div>
           <div><div class="trans-name">${t.desc}</div><div class="trans-date">${t.date}</div></div>
         </div>
@@ -4736,18 +4821,18 @@
             read: false,
             time: "الآن",
             type: "transaction",
-            title: "💸 تحويل مالي",
+            title: "تحويل مالي",
             body: `تم تحويل ${formatMoney(amt)} EGP بنجاح`,
           });
           hideSpinner();
-          showToast(`✅ تم تحويل ${formatMoney(amt)} EGP بنجاح`, "success");
+          showToast(`تم تحويل ${formatMoney(amt)} EGP بنجاح`, "success");
           document.getElementById("transferTo").value = "";
           document.getElementById("transferAmt").value = "";
           document.getElementById("transferNote").value = "";
           if (currentPage === "dashboard") loadDashboard();
         } catch (e) {
           hideSpinner();
-          showError(err, "❌ " + e.message);
+          showError(err, e.message);
         }
       }
 
@@ -4809,15 +4894,15 @@
             read: false,
             time: "الآن",
             type: "transaction",
-            title: "🧾 دفع فاتورة",
+            title: "سداد فاتورة",
             body: `تم دفع فاتورة ${type} بقيمة ${formatMoney(amt)} EGP`,
           });
           hideSpinner();
-          showToast(`✅ تم دفع فاتورة ${type} بنجاح`, "success");
+          showToast(`تم دفع فاتورة ${type} بنجاح`, "success");
           if (currentPage === "dashboard") loadDashboard();
         } catch (e) {
           hideSpinner();
-          showToast("❌ " + e.message, "error");
+          showToast(e.message, "error");
         }
       }
 
@@ -4892,17 +4977,17 @@
             expiry: "12/28",
           });
           DB.save();
-          showToast("✅ تم إصدار البطاقة بنجاح!", "success");
+          showToast("تم إصدار البطاقة المصرفية بنجاح", "success");
           loadCards();
         }, 2000);
       }
 
       function openFreezeCardModal() {
-        showToast("❄️ تم تجميد البطاقة مؤقتاً", "info");
+        showToast("تم تجميد البطاقة مؤقتاً", "info");
       }
 
       function openCardLimitModal() {
-        showToast("💲 يمكنك تعديل الحدود من الإعدادات", "info");
+        showToast("يمكنك تعديل الحدود الائتمانية من الإعدادات", "info");
       }
 
       // ============================== SAVINGS ==============================
@@ -5368,15 +5453,15 @@
             read: false,
             time: "الآن",
             type: "transaction",
-            title: "💱 صرف عملة",
+            title: "صرف عملة",
             body: `تم صرف ${amt} ${from} إلى ${result} ${to}`,
           });
           hideSpinner();
-          showToast(`✅ تم صرف ${amt} ${from} إلى ${result} ${to}`, "success");
+          showToast(`تم صرف ${amt} ${from} إلى ${result} ${to}`, "success");
           if (currentPage === "dashboard") loadDashboard();
         } catch (e) {
           hideSpinner();
-          showToast("❌ " + e.message, "error");
+          showToast(e.message, "error");
         }
       }
 
@@ -5437,10 +5522,10 @@
       }
 
       function exportStatement() {
-        showToast("📄 جاري تحضير كشف الحساب...", "info");
+        showToast("جاري إعداد كشف الحساب المصرفي...", "info");
         setTimeout(
           () =>
-            showToast("✅ تم إرسال كشف الحساب لبريدك الإلكتروني", "success"),
+            showToast("تم إرسال كشف الحساب لبريدك الإلكتروني", "success"),
           2000,
         );
       }

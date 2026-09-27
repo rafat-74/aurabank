@@ -195,9 +195,17 @@
         border-color: rgba(56, 139, 253, 0.2);
       }
       .sb-item .ic {
-        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         width: 18px;
-        text-align: center;
+        height: 18px;
+        flex-shrink: 0;
+      }
+      .sb-item .ic svg {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
       }
       .sb-item .lbl {
         flex: 1;
@@ -1102,8 +1110,17 @@
         top: 50%;
         transform: translateY(-50%);
         color: var(--text3);
-        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
         pointer-events: none;
+      }
+      .search-wrap .s-icon svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
       }
       .search-wrap .input {
         padding-right: 32px;
@@ -1261,15 +1278,15 @@
             onclick="showView('dashboard')"
             id="nav-dashboard"
           >
-            <span class="ic">📊</span><span class="lbl">لوحة التحكم</span>
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></span><span class="lbl">لوحة التحكم</span>
           </div>
 
           <div class="sb-section">عمليات الشباك</div>
           <div class="sb-item" onclick="showView('teller')" id="nav-teller">
-            <span class="ic">💰</span><span class="lbl">عمليات الشباك</span>
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg></span><span class="lbl">عمليات الشباك</span>
           </div>
           <div class="sb-item" onclick="showView('transfer')" id="nav-transfer">
-            <span class="ic">🔄</span><span class="lbl">التحويلات</span>
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg></span><span class="lbl">التحويلات</span>
           </div>
 
           <div class="sb-section">العملاء</div>
@@ -1278,27 +1295,27 @@
             onclick="showView('customers')"
             id="nav-customers"
           >
-            <span class="ic">👥</span><span class="lbl">بحث العملاء</span>
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span><span class="lbl">بحث العملاء</span>
           </div>
           <div
             class="sb-item"
             onclick="showView('newcustomer')"
             id="nav-newcustomer"
           >
-            <span class="ic">➕</span><span class="lbl">عميل جديد</span>
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg></span><span class="lbl">عميل جديد</span>
           </div>
 
           <div class="sb-section">التقارير</div>
           <div class="sb-item" onclick="showView('reports')" id="nav-reports">
-            <span class="ic">📈</span><span class="lbl">تقارير اليوم</span>
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span><span class="lbl">تقارير اليوم</span>
           </div>
           <div class="sb-item" id="nav-audit" onclick="showView('audit')">
-            <span class="ic">🔍</span><span class="lbl">سجل العمليات</span>
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span><span class="lbl">سجل العمليات</span>
           </div>
 
           <div class="sb-section">القروض</div>
           <div class="sb-item" onclick="showView('loans')" id="nav-loans">
-            <span class="ic">🏦</span><span class="lbl">طلبات القروض</span>
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"></line><line x1="3" y1="10" x2="21" y2="10"></line><polyline points="5 6 12 3 19 6"></polyline><line x1="4" y1="10" x2="4" y2="21"></line><line x1="20" y1="10" x2="20" y2="21"></line></svg></span><span class="lbl">طلبات القروض</span>
           </div>
 
           <!-- Admin/Supervisor only -->
@@ -1309,21 +1326,21 @@
               onclick="showView('employees')"
               id="nav-employees"
             >
-              <span class="ic">👤</span><span class="lbl">الموظفون</span>
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><span class="lbl">الموظفون</span>
             </div>
             <div
               class="sb-item"
               onclick="showView('allaccounts')"
               id="nav-allaccounts"
             >
-              <span class="ic">🏦</span><span class="lbl">كل الحسابات</span>
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="3" y1="10" x2="21" y2="10"></line></svg></span><span class="lbl">كل الحسابات</span>
             </div>
           </div>
         </div>
 
         <div class="sb-footer">
           <div class="sb-logout" onclick="doLogout()">
-            <span>🚪</span> <span>تسجيل الخروج</span>
+            <span style="display:inline-flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></span> <span>تسجيل الخروج</span>
           </div>
         </div>
       </div>
@@ -1334,7 +1351,7 @@
           <div class="tb-time" id="tbTime"></div>
           <div class="tb-branch" id="tbBranch"></div>
           <div class="tb-notif" onclick="showView('audit')">
-            🔔
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
             <div class="tb-notif-dot"></div>
           </div>
         </div>
@@ -1351,7 +1368,7 @@
             <div class="grid-2">
               <div class="card">
                 <div class="card-head">
-                  <div class="card-title">🔄 آخر العمليات اليوم</div>
+                  <div class="card-title">آخر العمليات اليوم</div>
                   <div class="card-action" onclick="showView('reports')">
                     عرض الكل
                   </div>
@@ -1370,7 +1387,7 @@
               </div>
               <div class="card">
                 <div class="card-head">
-                  <div class="card-title">👥 آخر العملاء</div>
+                  <div class="card-title">أحدث العملاء</div>
                 </div>
                 <div class="card-body" id="dashRecentCust">
                   <div
@@ -1388,7 +1405,7 @@
             <div class="grid-2">
               <div class="card">
                 <div class="card-head">
-                  <div class="card-title">📊 الإيداعات والسحوبات (7 أيام)</div>
+                  <div class="card-title">حركة الإيداعات والسحوبات (7 أيام)</div>
                 </div>
                 <div class="card-body">
                   <div class="mini-bars" id="weekChart"></div>
@@ -1440,7 +1457,7 @@
               </div>
               <div class="card">
                 <div class="card-head">
-                  <div class="card-title">⚡ إجراءات سريعة</div>
+                  <div class="card-title">الإجراءات السريعة</div>
                 </div>
                 <div class="card-body">
                   <div
@@ -1454,25 +1471,25 @@
                       class="btn btn-success"
                       onclick="showView('teller')"
                     >
-                      💵 إيداع / سحب
+                      إيداع / سحب نقدي
                     </button>
                     <button
                       class="btn btn-primary"
                       onclick="showView('transfer')"
                     >
-                      🔄 تحويل
+                      تحويل مصرفي
                     </button>
                     <button
                       class="btn btn-ghost"
                       onclick="showView('customers')"
                     >
-                      🔍 بحث عميل
+                      بحث عن عميل
                     </button>
                     <button
                       class="btn btn-ghost"
                       onclick="showView('newcustomer')"
                     >
-                      ➕ عميل جديد
+                      إضافة عميل جديد
                     </button>
                   </div>
                 </div>
@@ -1484,7 +1501,7 @@
           <div class="view" id="view-teller">
             <div class="search-bar">
               <div class="search-wrap" style="flex: 1">
-                <span class="s-icon">🔍</span>
+                <span class="s-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
                 <input
                   class="input"
                   id="tellerSearch"
@@ -1570,26 +1587,26 @@
                       class="btn btn-ghost btn-sm"
                       onclick="openCustomerDetail()"
                     >
-                      📋 التفاصيل الكاملة
+                      التفاصيل الكاملة
                     </button>
                     <button
                       class="btn btn-ghost btn-sm"
                       id="freezeBtn"
                       onclick="toggleFreeze()"
                     >
-                      ❄️ تجميد
+                      تجميد الحساب
                     </button>
                     <button
                       class="btn btn-ghost btn-sm"
                       onclick="openEditCustomer()"
                     >
-                      ✏️ تعديل
+                      تعديل البيانات
                     </button>
                   </div>
                 </div>
 
                 <div class="op-box">
-                  <div class="op-box-title">💵 إيداع نقدي</div>
+                  <div class="op-box-title">إيداع نقدي</div>
                   <div class="amount-input-wrap">
                     <span class="currency">EGP</span>
                     <input
@@ -1612,13 +1629,13 @@
                   </div>
                   <div class="btn-row">
                     <button class="btn btn-success" onclick="doDeposit()">
-                      ✅ تنفيذ الإيداع
+                      تنفيذ الإيداع
                     </button>
                   </div>
                 </div>
 
                 <div class="op-box">
-                  <div class="op-box-title">💸 سحب نقدي</div>
+                  <div class="op-box-title">سحب نقدي</div>
                   <div class="amount-input-wrap">
                     <span class="currency">EGP</span>
                     <input
@@ -1641,13 +1658,13 @@
                   </div>
                   <div class="btn-row">
                     <button class="btn btn-danger" onclick="doWithdraw()">
-                      ✅ تنفيذ السحب
+                      تنفيذ السحب
                     </button>
                   </div>
                 </div>
 
                 <div class="op-box">
-                  <div class="op-box-title">🧾 دفع فاتورة</div>
+                  <div class="op-box-title">سداد فاتورة</div>
                   <div class="form-row">
                     <div class="form-group" style="margin-bottom: 0">
                       <label class="label">نوع الفاتورة</label>
@@ -1680,14 +1697,14 @@
                   </div>
                   <div class="btn-row">
                     <button class="btn btn-amber" onclick="doPayBill()">
-                      ✅ دفع الفاتورة
+                      تأكيد دفع الفاتورة
                     </button>
                   </div>
                 </div>
 
                 <div class="card">
                   <div class="card-head">
-                    <div class="card-title">📋 آخر معاملاته</div>
+                    <div class="card-title">آخر المعاملات للعميل</div>
                   </div>
                   <div class="card-body" id="tellerCustTx"></div>
                 </div>
@@ -1699,7 +1716,7 @@
           <div class="view" id="view-loans">
             <div class="search-bar">
               <div class="search-wrap" style="flex: 1">
-                <span class="s-icon">🔍</span>
+                <span class="s-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
                 <input
                   class="input"
                   id="loansSearch"
@@ -1727,7 +1744,7 @@
                 style="display: none"
                 onclick="openNewLoanModal()"
               >
-                ➕ طلب قرض جديد
+                طلب قرض جديد
               </button>
             </div>
 
@@ -1776,7 +1793,7 @@
             <div class="grid-2">
               <div class="card">
                 <div class="card-head">
-                  <div class="card-title">🔄 تحويل بين الحسابات</div>
+                  <div class="card-title">تحويل بين الحسابات</div>
                 </div>
                 <div class="card-body">
                   <div class="form-group">
@@ -1877,13 +1894,13 @@
                     style="width: 100%"
                     onclick="doTransfer()"
                   >
-                    🔄 تنفيذ التحويل
+                    تنفيذ التحويل المصرفي
                   </button>
                 </div>
               </div>
               <div class="card">
                 <div class="card-head">
-                  <div class="card-title">📋 آخر التحويلات</div>
+                  <div class="card-title">آخر التحويلات المصرفية</div>
                 </div>
                 <div class="card-body" id="recentTransfers">
                   <div
@@ -1904,7 +1921,7 @@
           <div class="view" id="view-customers">
             <div class="search-bar">
               <div class="search-wrap" style="flex: 1">
-                <span class="s-icon">🔍</span>
+                <span class="s-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
                 <input
                   class="input"
                   id="custSearch"
@@ -2038,7 +2055,7 @@
                     style="width: 100%; padding: 12px; font-size: 0.9rem"
                     onclick="createCustomer()"
                   >
-                    ✅ إنشاء الحساب
+                    إنشاء الحساب المصرفي
                   </button>
                 </div>
               </div>
@@ -2051,10 +2068,10 @@
             <div class="card" style="margin-bottom: 16px">
               <div class="card-head">
                 <div class="card-title">
-                  📊 تقرير عمليات اليوم — من قاعدة البيانات
+                  تقرير عمليات اليوم — قاعدة البيانات المركزية
                 </div>
                 <button class="btn btn-ghost btn-sm" onclick="window.print()">
-                  🖨️ طباعة
+                  طباعة التقرير
                 </button>
               </div>
               <div class="card-body">
@@ -2092,10 +2109,10 @@
             <div class="card">
               <div class="card-head">
                 <div class="card-title">
-                  🔍 سجل عمليات النظام — من قاعدة البيانات
+                  سجل تدقيق عمليات النظام (Audit Log)
                 </div>
                 <button class="btn btn-ghost btn-sm" onclick="clearAuditLog()">
-                  🗑️ مسح السجل
+                  مسح السجل
                 </button>
               </div>
               <div class="card-body" id="auditLogBody">
@@ -2112,12 +2129,12 @@
           <div class="view" id="view-employees">
             <div class="card">
               <div class="card-head">
-                <div class="card-title">👤 الموظفون</div>
+                <div class="card-title">الموظفون والمستخدمون</div>
                 <button
                   class="btn btn-primary btn-sm"
                   onclick="openAddEmpModal()"
                 >
-                  ➕ موظف جديد
+                  إضافة موظف جديد
                 </button>
               </div>
               <div class="card-body">
@@ -2156,7 +2173,7 @@
             <div class="stats-row" id="allAccStats"></div>
             <div class="card">
               <div class="card-head">
-                <div class="card-title">🏦 جميع الحسابات</div>
+                <div class="card-title">جميع الحسابات المصرفية</div>
               </div>
               <div class="card-body">
                 <table>
@@ -2249,7 +2266,7 @@
             إلغاء
           </button>
           <button class="btn btn-primary" onclick="saveEditCustomer()">
-            💾 حفظ التعديلات
+            حفظ التعديلات
           </button>
         </div>
       </div>
@@ -2258,7 +2275,7 @@
     <div class="modal-bg" id="receiptModal">
       <div class="modal" style="max-width: 400px">
         <div class="modal-head">
-          <div class="modal-title">🧾 إيصال العملية</div>
+          <div class="modal-title">إيصال العملية المصرفية</div>
           <button class="modal-close" onclick="closeModal('receiptModal')">
             ✕
           </button>
@@ -2269,7 +2286,7 @@
             إغلاق
           </button>
           <button class="btn btn-primary" onclick="window.print()">
-            🖨️ طباعة
+            طباعة الإيصال
           </button>
         </div>
       </div>
@@ -2278,7 +2295,7 @@
     <div class="modal-bg" id="addEmpModal">
       <div class="modal">
         <div class="modal-head">
-          <div class="modal-title">➕ موظف جديد</div>
+          <div class="modal-title">إضافة موظف جديد</div>
           <button class="modal-close" onclick="closeModal('addEmpModal')">
             ✕
           </button>
@@ -2328,7 +2345,7 @@
             إلغاء
           </button>
           <button class="btn btn-primary" onclick="addEmployee()">
-            ➕ إضافة
+            إضافة الموظف
           </button>
         </div>
       </div>
@@ -2360,7 +2377,7 @@
     <div class="modal-bg" id="newLoanModal">
       <div class="modal" style="max-width: 480px">
         <div class="modal-head">
-          <div class="modal-title">🏦 طلب قرض جديد نيابة عن عميل</div>
+          <div class="modal-title">طلب تمويل بنكي نيابة عن عميل</div>
           <button class="modal-close" onclick="closeModal('newLoanModal')">
             ✕
           </button>
@@ -2756,11 +2773,11 @@
         let actions = "";
 
         if (role === "teller") {
-          actions += `<button class="btn btn-ghost btn-sm" onclick="cancelLoan('${l.id}')">🚫 إلغاء</button>`;
+          actions += `<button class="btn btn-ghost btn-sm" onclick="cancelLoan('${l.id}')">إلغاء الطلب</button>`;
         }
         if (role === "admin" || role === "supervisor") {
-          actions += `<button class="btn btn-success btn-sm" onclick="approveLoan('${l.id}')">✅ موافقة</button>
-                      <button class="btn btn-danger btn-sm" onclick="openRejectModal('${l.id}')">❌ رفض</button>`;
+          actions += `<button class="btn btn-success btn-sm" onclick="approveLoan('${l.id}')">اعتماد وموافقة</button>
+                      <button class="btn btn-danger btn-sm" onclick="openRejectModal('${l.id}')">رفض الطلب</button>`;
         }
         return actions || `<span style="color:var(--text3);font-size:0.78rem;">—</span>`;
       }
@@ -2789,7 +2806,7 @@
           document.getElementById("loanCustResults").innerHTML = "";
           const sel = document.getElementById("loanCustSelected");
           sel.style.display = "block";
-          sel.innerHTML = `✅ العميل: <strong>${user.firstName} ${user.lastName}</strong> — ${user.accountNumber}
+          sel.innerHTML = `العميل: <strong>${user.firstName} ${user.lastName}</strong> — ${user.accountNumber}
             <span style="color:var(--blue);cursor:pointer;margin-right:8px;" onclick="clearLoanCustomer()">تغيير</span>`;
         });
       }
@@ -2829,7 +2846,7 @@
             },
           );
           closeModal("newLoanModal");
-          showAlert("✅ تم تقديم طلب القرض بنجاح");
+          showAlert("تم تقديم طلب التمويل بنجاح");
           await loadLoansView();
         } catch (e) {
           showAlert(e.message || "فشل تقديم الطلب", "error");
@@ -2844,7 +2861,7 @@
             reviewerRole: currentEmp.role,
             reviewerName: currentEmp.name,
           });
-          showAlert("✅ تمت الموافقة على القرض");
+          showAlert("تمت الموافقة على طلب التمويل بنجاح");
           await loadLoansView();
         } catch (e) {
           showAlert(e.message || "فشلت الموافقة", "error");
@@ -2869,7 +2886,7 @@
             note,
           });
           closeModal("rejectLoanModal");
-          showAlert("❌ تم رفض الطلب");
+          showAlert("تم رفض الطلب");
           loanToReject = null;
           await loadLoansView();
         } catch (e) {
@@ -2884,7 +2901,7 @@
             tellerId: currentEmp.id,
             tellerName: currentEmp.name,
           });
-          showAlert("🚫 تم إلغاء الطلب");
+          showAlert("تم إلغاء الطلب بنجاح");
           await loadLoansView();
         } catch (e) {
           showAlert(e.message || "فشل الإلغاء", "error");
@@ -3086,31 +3103,17 @@
 
       function txItem(t) {
         const op = t.type || "";
-        const icons = {
-          deposit: "💵",
-          credit: "💵",
-          withdrawal: "💸",
-          withdraw: "💸",
-          debit: "💸",
-          transfer: "🔄",
-          bill: "🧾",
-        };
-        const bgColors = {
-          deposit: "var(--green-bg)",
-          credit: "var(--green-bg)",
-          withdrawal: "var(--red-bg)",
-          withdraw: "var(--red-bg)",
-          transfer: "var(--blue-bg)",
-          bill: "var(--amber-bg)",
-        };
         const isCr =
           op === "deposit" || op === "credit" || op === "transfer_in";
         const customerName = t.customer || t.customer_name || "";
         const empName = t.emp || t.teller_name || "";
         const timeStr = (t.time || t.created_at || "").substring(0, 16);
+        const iconSvg = isCr 
+          ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="7" x2="17" y2="17"></line><polyline points="17 7 17 17 7 17"></polyline></svg>'
+          : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>';
         return `
     <div class="tx-item">
-      <div class="tx-icon" style="background:${bgColors[op] || "var(--bg3)"};">${icons[op] || "💼"}</div>
+      <div class="tx-icon" style="background:${isCr ? "var(--green-bg)" : "var(--red-bg)"}; color:${isCr ? "var(--green)" : "var(--red)"}; display:flex; align-items:center; justify-content:center;">${iconSvg}</div>
       <div class="tx-info">
         <div class="tx-desc">${t.desc || t.description || ""}</div>
         <div class="tx-meta">${customerName} · ${timeStr} · ${empName}</div>
@@ -3160,7 +3163,7 @@
         <div class="cust-av" style="background:${getColor(u.id)};">${u.firstName[0]}</div>
         <div>
           <div class="cust-name">${u.firstName} ${u.lastName}
-            ${u.frozen ? '<span style="color:var(--red);font-size:0.7rem;">❄️ مجمّد</span>' : ""}
+            ${u.frozen ? '<span style="color:var(--red);font-size:0.7rem;">(مجمّد)</span>' : ""}
           </div>
           <div class="cust-num">${u.accountNumber}</div>
         </div>
@@ -3211,7 +3214,7 @@
         document.getElementById("frozenBanner").style.display =
           selectedCustomer.frozen ? "flex" : "none";
         document.getElementById("freezeBtn").textContent =
-          selectedCustomer.frozen ? "🔓 إلغاء التجميد" : "❄️ تجميد الحساب";
+          selectedCustomer.frozen ? "إلغاء التجميد" : "تجميد الحساب";
 
         document.getElementById("tellerCustAv").textContent =
           selectedCustomer.firstName[0];
@@ -3245,7 +3248,9 @@
               .map(
                 (t) => `
         <div class="tx-item">
-          <div class="tx-icon" style="background:${t.type === "credit" ? "var(--green-bg)" : "var(--red-bg)"};">${t.type === "credit" ? "💵" : "💸"}</div>
+          <div class="tx-icon" style="background:${t.type === "credit" ? "var(--green-bg)" : "var(--red-bg)"}; color:${t.type === "credit" ? "var(--green)" : "var(--red)"}; display:flex; align-items:center; justify-content:center;">
+            ${t.type === "credit" ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="7" x2="17" y2="17"></line><polyline points="17 7 17 17 7 17"></polyline></svg>' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>'}
+          </div>
           <div class="tx-info">
             <div class="tx-desc">${t.desc}</div>
             <div class="tx-meta">${t.date}</div>
@@ -3255,6 +3260,7 @@
       `,
               )
               .join("")
+          : '<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:16px;">لا توجد معاملات سابقة</div>';
           : '<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:16px;">لا توجد معاملات سابقة</div>';
 
         // Re-render search list to show selection
@@ -3633,7 +3639,7 @@
               await loadRecentTransfers();
             } catch (e) {
               hideSpinner();
-              showAlert("❌ " + e.message, "error");
+              showAlert(e.message, "error");
             }
           },
         );
@@ -3651,7 +3657,7 @@
                   .map(
                     (t) => `
           <div class="tx-item">
-            <div class="tx-icon" style="background:var(--blue-bg);">🔄</div>
+            <div class="tx-icon" style="background:var(--blue-bg); color:var(--blue); display:flex; align-items:center; justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg></div>
             <div class="tx-info">
               <div class="tx-desc">${t.desc || t.description || ""}</div>
               <div class="tx-meta">${(t.time || t.created_at || "").substring(0, 16)} · ${t.emp || t.teller_name || ""}</div>
@@ -3799,9 +3805,9 @@
         : '<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:12px;">لا توجد معاملات</div>'
     }
     <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
-      <button class="btn btn-ghost btn-sm" onclick="closeModal('custDetailModal');showView('teller');setTimeout(()=>{document.getElementById('tellerSearch').value='${u.firstName}';searchTellerCustomer();selectTellerCustomer('${u.id}');},200);">💰 فتح في الشباك</button>
-      <button class="btn btn-ghost btn-sm" onclick="selectedCustomer=DB_users.find(u=>u.id==='${u.id}');closeModal('custDetailModal');openEditCustomer();">✏️ تعديل البيانات</button>
-      <button class="btn btn-${u.frozen ? "success" : "ghost"} btn-sm" onclick="selectedCustomer=DB_users.find(u=>u.id==='${u.id}');closeModal('custDetailModal');toggleFreeze();">${u.frozen ? "🔓 إلغاء التجميد" : "❄️ تجميد الحساب"}</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('custDetailModal');showView('teller');setTimeout(()=>{document.getElementById('tellerSearch').value='${u.firstName}';searchTellerCustomer();selectTellerCustomer('${u.id}');},200);">فتح في نافذة الصرّاف</button>
+      <button class="btn btn-ghost btn-sm" onclick="selectedCustomer=DB_users.find(u=>u.id==='${u.id}');closeModal('custDetailModal');openEditCustomer();">تعديل البيانات</button>
+      <button class="btn btn-${u.frozen ? "success" : "ghost"} btn-sm" onclick="selectedCustomer=DB_users.find(u=>u.id==='${u.id}');closeModal('custDetailModal');toggleFreeze();">${u.frozen ? "إلغاء التجميد" : "تجميد الحساب"}</button>
     </div>
   `;
         openModal("custDetailModal");
@@ -3984,11 +3990,11 @@
     `;
 
           const icons = {
-            deposit: "💵 إيداع",
-            withdrawal: "💸 سحب",
-            withdraw: "💸 سحب",
-            transfer: "🔄 تحويل",
-            bill: "🧾 فاتورة",
+            deposit: "إيداع",
+            withdrawal: "سحب",
+            withdraw: "سحب",
+            transfer: "تحويل",
+            bill: "فاتورة",
           };
           const badgeClasses = {
             deposit: "green",
@@ -4247,7 +4253,7 @@
         const refNum = "TX" + Date.now().toString().slice(-8);
         document.getElementById("receiptBody").innerHTML = `
     <div class="receipt">
-      <div class="receipt-title">🏦 Aura Bank — إيصال عملية</div>
+      <div class="receipt-title">AURA BANK — إيصال عملية مصرفية</div>
       <hr>
       رقم الإيصال: ${refNum}
       <br>التاريخ والوقت: ${new Date().toLocaleString("ar-EG")}
