@@ -2868,7 +2868,7 @@
                 type="text"
                 class="form-input"
                 id="regFirst"
-                placeholder="محمد"
+                placeholder="Rafat"
               />
             </div>
             <div class="form-group">
@@ -2877,7 +2877,7 @@
                 type="text"
                 class="form-input"
                 id="regLast"
-                placeholder="أحمد"
+                placeholder="Ashraf"
               />
             </div>
           </div>
@@ -4481,15 +4481,15 @@
           loginSuccess(user);
         } catch (e) {
           hideSpinner();
-          showToast("❌ " + (e.message || "تعذر الاتصال"), "error");
+          showToast(e.message || "تعذر الاتصال", "error");
         }
       }
 
       function createDemoUser() {
         const demo = {
           id: "demo-001",
-          firstName: "أحمد",
-          lastName: "محمد",
+          firstName: "Rafat",
+          lastName: "Ashraf",
           email: "demo@aurabank.eg",
           phone: "01012345678",
           nid: "29901010100001",
