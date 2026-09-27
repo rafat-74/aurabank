@@ -155,7 +155,10 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - aurabank-net
+      aurabank-net:
+        aliases:
+          - api-gateway
+          - api-gateway.aurabank-dev.local
     restart: unless-stopped
 
   # ── Frontend Customers :8080 ───────────────────────────────────────────────
@@ -168,7 +171,7 @@ services:
     depends_on:
       - api-gateway
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -186,7 +189,7 @@ services:
     depends_on:
       - api-gateway
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
