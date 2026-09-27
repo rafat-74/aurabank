@@ -18,7 +18,7 @@
 </div>
 
 <p align="center">
-  <img src="./architecture_poster.jpg" alt="Aura Bank Architecture Poster" width="100%">
+  <img src="./screenshots/architecture_poster_v2.jpg" alt="Aura Bank Architecture Poster" width="100%">
 </p>
 
 ---
@@ -258,6 +258,8 @@ AuraBank/
 ├── README.frontend.md              # Frontend architecture & UI theme details
 ├── README_devops.md                # DevOps, Docker, and CI/CD pipelines guide
 ├── INFRASTRUCTURE-on-AWS.md        # Detailed AWS architectural reference
+│
+├── screenshots/                    # Architecture diagrams, UI screenshots & DevOps proofs
 │
 ├── services/
 │   ├── api-gateway/                # FastAPI Gateway (:8000)
